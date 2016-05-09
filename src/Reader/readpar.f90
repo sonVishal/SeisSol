@@ -1262,7 +1262,7 @@ CONTAINS
     TYPE (tInputOutput)        :: IO
     LOGICAL                    :: CalledFromStructCode
     ! localVariables
-    INTEGER                    :: OutputMask(10)
+    INTEGER                    :: OutputMask(11)
     INTEGER                    :: printtimeinterval
     INTEGER                    :: printIntervalCriterion
     INTEGER                    :: refinement_strategy, refinement
@@ -1277,7 +1277,7 @@ CONTAINS
     printtimeinterval_sec = 1d0
     printIntervalCriterion = 1
     OutputMask(:) = 1
-    OutputMask(4:10) = 0
+    OutputMask(4:11) = 0
     refinement_strategy = 2
     refinement = 2
     !
@@ -1291,10 +1291,10 @@ CONTAINS
     endif
 
     ! if 2, printtimeinterval is set afterwards, when dt is known
-    DISC%DynRup%DynRup_out_elementwise%OutputMask(1:10) =  OutputMask(1:10)      ! read info of desired output 1/ yes, 0/ no
+    DISC%DynRup%DynRup_out_elementwise%OutputMask(1:11) =  OutputMask(1:11)      ! read info of desired output 1/ yes, 0/ no
                                                                                      ! position: 1/ slip rate 2/ stress 3/ normal velocity
                                                                                      ! 4/ in case of rate and state output friction and state variable
-                                                                                     ! 5/ background values 6/Slip 7/rupture speed 8/slip 9/peak SR 10/rupture arrival
+                                                                                     ! 5/ background values 6/Slip 7/rupture speed 8/slip 9/peak SR  10/Slip duration 11/rupture arrival
     DISC%DynRup%DynRup_out_elementwise%refinement_strategy = refinement_strategy
 
     IF (DISC%DynRup%DynRup_out_elementwise%refinement_strategy.NE.2 .AND. & 
@@ -1305,8 +1305,8 @@ CONTAINS
 
     DISC%DynRup%DynRup_out_elementwise%refinement = refinement                 ! read info of desired refinement level : default 0
 
-   IF ((OutputMask(7).EQ.1) .AND. (DISC%DynRup%RF_output_on.EQ.0)) THEN
-        logError(*) 'For Vr output, RF_output_on have to be set to 1'
+   IF (((OutputMask(7).EQ.1).OR.(OutputMask(10).EQ.1)) .AND. (DISC%DynRup%RF_output_on.EQ.0)) THEN
+        logError(*) 'For Vr output or Slip duration, RF_output_on have to be set to 1'
         logError(*) 'Setting RF_output_on to 1'
         DISC%DynRup%RF_output_on = 1
    ENDIF

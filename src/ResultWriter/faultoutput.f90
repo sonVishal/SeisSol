@@ -731,6 +731,10 @@ CONTAINS
                   OutVars = OutVars + 1
                   DynRup_output%OutVal(iOutPoints,1,OutVars) = DISC%DynRup%rupture_time(iFace,iBndGP)
               ENDIF
+              IF (DynRup_output%OutputMask(11).EQ.1) THEN
+                  OutVars = OutVars + 1
+                  DynRup_output%OutVal(iOutPoints,1,OutVars) = DISC%DynRup%SlipDuration(iFace,iBndGP)
+              ENDIF
           ENDIF
 
 
