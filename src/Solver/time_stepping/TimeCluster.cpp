@@ -481,6 +481,7 @@ void seissol::time_stepping::TimeCluster::computeNeighboringIntegration( seissol
   
   real                      (*dofs)[NUMBER_OF_ALIGNED_DOFS] = i_layerData.var(m_lts->dofs);
   real*                     (*faceNeighbors)[4]             = i_layerData.var(m_lts->faceNeighbors);
+  LocalIntegrationData* localIntegration        = i_layerData.var(m_lts->localIntegration);
   NeighboringIntegrationData* neighboringIntegration        = i_layerData.var(m_lts->neighboringIntegration);
   CellLocalInformation*       cellInformation               = i_layerData.var(m_lts->cellInformation);
 #ifdef USE_PLASTICITY
@@ -562,7 +563,9 @@ void seissol::time_stepping::TimeCluster::computeNeighboringIntegration( seissol
                                                l_globalData,
                                                &neighboringIntegration[l_cell],
                                                l_timeIntegrated,
-                                               dofs[l_cell] );
+                                               dofs[l_cell],
+                                               &localIntegration[l_cell],
+                                               m_timeStepWidth );
 #else
     // @TODO in case of multiple global data copies, choose a distribution which
     //       cannot generate a 0-id copy reference in the end as remainder handling

@@ -53,13 +53,16 @@
 #include <stdint.h>
 #include <cstddef>
 #include <cstring>
+#include <cmath>
 
 void seissol::kernels::Neighbor::computeNeighborsIntegral(  enum faceType const               i_faceTypes[4],
                                                             int const                         i_neighboringIndices[4][2],
                                                             GlobalData const*                 global,
                                                             NeighboringIntegrationData const* neighbor,
                                                             real*                             i_timeIntegrated[4],
-                                                            real                              io_degreesOfFreedom[ NUMBER_OF_ALIGNED_BASIS_FUNCTIONS*NUMBER_OF_QUANTITIES ] ) {
+                                                            real                              io_degreesOfFreedom[ NUMBER_OF_ALIGNED_BASIS_FUNCTIONS*NUMBER_OF_QUANTITIES ],
+                                                            LocalIntegrationData const* local,
+                                                            double timestep ) {
 #ifndef NDEBUG
   // alignment of the flux matrices
   for( int l_matrix = 0; l_matrix < 52; l_matrix++ ) {
@@ -127,6 +130,33 @@ void seissol::kernels::Neighbor::computeNeighborsIntegral(  enum faceType const 
             NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
             &io_degreesOfFreedom[NUMBER_OF_ALIGNED_ELASTIC_DOFS + mech * NUMBER_OF_ALIGNED_MECHANISM_DOFS],
             NUMBER_OF_ALIGNED_BASIS_FUNCTIONS );
+  }
+  
+  // Fractional steps
+  for (unsigned mech = 0; mech < NUMBER_OF_RELAXATION_MECHANISMS; ++mech) {
+    unsigned mechOffset = NUMBER_OF_ALIGNED_ELASTIC_DOFS + mech * NUMBER_OF_ALIGNED_MECHANISM_DOFS;
+
+    real temp[NUMBER_OF_ALIGNED_ELASTIC_DOFS] __attribute__((aligned(PAGESIZE_STACK)));
+    memset(temp, 0, NUMBER_OF_ALIGNED_ELASTIC_DOFS * sizeof(real));
+    seissol::generatedKernels::source(  local->specific.ET + mech * seissol::model::ET::reals,
+                                        io_degreesOfFreedom + mechOffset,
+                                        temp);
+      SXtYp(  (1.-exp(-local->specific.omega[mech]*timestep)) / local->specific.omega[mech],
+          NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
+          NUMBER_OF_ELASTIC_QUANTITIES,
+          temp,
+          NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
+          io_degreesOfFreedom,
+          NUMBER_OF_ALIGNED_BASIS_FUNCTIONS );
+          
+      real* source = io_degreesOfFreedom + mechOffset;
+      real* target = io_degreesOfFreedom + mechOffset;
+      double f = exp(-local->specific.omega[mech] * timestep);
+      for (unsigned mech = 0; mech < NUMBER_OF_MECHANISM_QUANTITIES; ++mech) {
+        for (unsigned b = 0; b < NUMBER_OF_ALIGNED_BASIS_FUNCTIONS; ++b) {
+          target[b + mech*NUMBER_OF_ALIGNED_BASIS_FUNCTIONS] = f * source[b + mech*NUMBER_OF_ALIGNED_BASIS_FUNCTIONS];
+        }
+      }
   }
 }
 

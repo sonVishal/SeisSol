@@ -118,7 +118,7 @@ void seissol::kernels::Time::computeAder( double                      i_timeStep
     for (int mech = NUMBER_OF_RELAXATION_MECHANISMS-1; mech >= 0; --mech) {
       unsigned mechOffset = NUMBER_OF_ALIGNED_ELASTIC_DOFS + mech * NUMBER_OF_ALIGNED_MECHANISM_DOFS;
       
-      seissol::generatedKernels::source(  local->specific.ET + mech * seissol::model::ET::reals,
+      /*seissol::generatedKernels::source(  local->specific.ET + mech * seissol::model::ET::reals,
                                           lastDerivative + mechOffset,
                                           currentDerivative );
 
@@ -130,7 +130,15 @@ void seissol::kernels::Time::computeAder( double                      i_timeStep
               lastDerivative + mechOffset,
               NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
               currentDerivative + mechOffset,
-              NUMBER_OF_ALIGNED_BASIS_FUNCTIONS );
+              NUMBER_OF_ALIGNED_BASIS_FUNCTIONS );*/
+      
+      real* source = currentDerivative + NUMBER_OF_ALIGNED_ELASTIC_DOFS;
+      real* target = currentDerivative + mechOffset;
+      for (unsigned mech = 0; mech < NUMBER_OF_MECHANISM_QUANTITIES; ++mech) {
+        for (unsigned b = 0; b < NUMBER_OF_ALIGNED_BASIS_FUNCTIONS; ++b) {
+          target[b + mech*NUMBER_OF_ALIGNED_BASIS_FUNCTIONS] = local->specific.omega[mech] * source[b + mech*NUMBER_OF_ALIGNED_BASIS_FUNCTIONS];
+        }
+      }
     }
 
     l_scalar *= i_timeStepWidth / real(l_derivative+1);

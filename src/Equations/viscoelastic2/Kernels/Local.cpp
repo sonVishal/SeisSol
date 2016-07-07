@@ -108,11 +108,11 @@ void seissol::kernels::Local::computeIntegral(  enum faceType const         i_fa
   for (unsigned mech = 0; mech < NUMBER_OF_RELAXATION_MECHANISMS; ++mech) {
     unsigned mechOffset = NUMBER_OF_ALIGNED_ELASTIC_DOFS + mech * NUMBER_OF_ALIGNED_MECHANISM_DOFS;
 
-    seissol::generatedKernels::source(  local->specific.ET + mech * seissol::model::ET::reals,
+    /*seissol::generatedKernels::source(  local->specific.ET + mech * seissol::model::ET::reals,
                                         i_timeIntegratedDegreesOfFreedom + mechOffset,
-                                        io_degreesOfFreedom);
+                                        io_degreesOfFreedom);*/
     
-    XYmStZp(  local->specific.omega[mech],
+    /*XYmStZp(  local->specific.omega[mech],
               NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
               NUMBER_OF_MECHANISM_QUANTITIES,
               reducedDofs + NUMBER_OF_ALIGNED_ELASTIC_DOFS,
@@ -120,7 +120,14 @@ void seissol::kernels::Local::computeIntegral(  enum faceType const         i_fa
               i_timeIntegratedDegreesOfFreedom + mechOffset,
               NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
               io_degreesOfFreedom + mechOffset,
-              NUMBER_OF_ALIGNED_BASIS_FUNCTIONS );
+              NUMBER_OF_ALIGNED_BASIS_FUNCTIONS );*/
+    SXtYp(  local->specific.omega[mech],
+        NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
+        NUMBER_OF_MECHANISM_QUANTITIES,
+        reducedDofs + NUMBER_OF_ALIGNED_ELASTIC_DOFS,
+        NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
+        io_degreesOfFreedom + mechOffset,
+        NUMBER_OF_ALIGNED_BASIS_FUNCTIONS );
   }
 }
 
