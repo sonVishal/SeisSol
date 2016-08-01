@@ -173,7 +173,7 @@ extern "C" {
   }
 
   void c_interoperability_getTimeDerivatives( int    i_meshId,
-                                              double  o_timeDerivatives[CONVERGENCE_ORDER][NUMBER_OF_DOFS] ) {
+                                              double  o_timeDerivatives[CONVERGENCE_ORDER][NUMBER_OF_PHYSICAL_DOFS] ) {
     e_interoperability.getTimeDerivatives( i_meshId,
                                            o_timeDerivatives );
   }
@@ -181,10 +181,10 @@ extern "C" {
   void c_interoperability_getFaceDerInt( int    i_meshId,
                                          int    i_localFaceId,
                                          double i_timeStepWidth,
-                                         double o_timeDerivativesCell[CONVERGENCE_ORDER][NUMBER_OF_DOFS],
-                                         double o_timeDerivativesNeighbor[CONVERGENCE_ORDER][NUMBER_OF_DOFS],
-                                         double o_timeIntegratedCell[NUMBER_OF_DOFS],
-                                         double o_timeIntegratedNeighbor[NUMBER_OF_DOFS] ) {
+                                         double o_timeDerivativesCell[CONVERGENCE_ORDER][NUMBER_OF_PHYSICAL_DOFS],
+                                         double o_timeDerivativesNeighbor[CONVERGENCE_ORDER][NUMBER_OF_PHYSICAL_DOFS],
+                                         double o_timeIntegratedCell[NUMBER_OF_PHYSICAL_DOFS],
+                                         double o_timeIntegratedNeighbor[NUMBER_OF_PHYSICAL_DOFS] ) {
     e_interoperability.getFaceDerInt( i_meshId,
                                       i_localFaceId,
                                       i_timeStepWidth,
@@ -543,9 +543,9 @@ void seissol::Interoperability::addToDofs( int      i_meshId,
 }
 
 void seissol::Interoperability::getTimeDerivatives( int    i_meshId,
-                                                    double  o_timeDerivatives[CONVERGENCE_ORDER][NUMBER_OF_DOFS] ) {
+                                                    double  o_timeDerivatives[CONVERGENCE_ORDER][NUMBER_OF_PHYSICAL_DOFS] ) {
   real l_timeIntegrated[NUMBER_OF_ALIGNED_DOFS] __attribute__((aligned(ALIGNMENT)));
-  real l_timeDerivatives[NUMBER_OF_ALIGNED_DERS] __attribute__((aligned(ALIGNMENT)));
+  real l_timeDerivatives[NUMBER_OF_ALIGNED_PHYSICAL_DERS] __attribute__((aligned(ALIGNMENT)));
 
   unsigned nonZeroFlops, hardwareFlops;
 #ifdef REQUIRE_SOURCE_MATRIX
@@ -573,10 +573,10 @@ void seissol::Interoperability::getTimeDerivatives( int    i_meshId,
 void seissol::Interoperability::getFaceDerInt( int    i_meshId,
                                                int    i_localFaceId,
                                                double i_timeStepWidth,
-                                               double o_timeDerivativesCell[CONVERGENCE_ORDER][NUMBER_OF_DOFS],
-                                               double o_timeDerivativesNeighbor[CONVERGENCE_ORDER][NUMBER_OF_DOFS],
-                                               double o_timeIntegratedCell[NUMBER_OF_DOFS],
-                                               double o_timeIntegratedNeighbor[NUMBER_OF_DOFS] ) {
+                                               double o_timeDerivativesCell[CONVERGENCE_ORDER][NUMBER_OF_PHYSICAL_DOFS],
+                                               double o_timeDerivativesNeighbor[CONVERGENCE_ORDER][NUMBER_OF_PHYSICAL_DOFS],
+                                               double o_timeIntegratedCell[NUMBER_OF_PHYSICAL_DOFS],
+                                               double o_timeIntegratedNeighbor[NUMBER_OF_PHYSICAL_DOFS] ) {
   // assert that the cell provides derivatives
   assert( (m_ltsLut.lookup(m_lts->cellInformation, i_meshId-1).ltsSetup >> 9)%2 == 1 );
   

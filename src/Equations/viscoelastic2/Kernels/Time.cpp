@@ -78,15 +78,12 @@ void seissol::kernels::Time::computeAder( double                      i_timeStep
   real l_scalar = i_timeStepWidth;
 
   // temporary result
-  real l_derivativesBuffer[NUMBER_OF_ALIGNED_DERS] __attribute__((aligned(PAGESIZE_STACK)));
+  real l_derivativesBuffer[2 * NUMBER_OF_ALIGNED_DOFS] __attribute__((aligned(PAGESIZE_STACK)));
 
   // initialize derivatives
   for( unsigned int l_dof = 0; l_dof < NUMBER_OF_ALIGNED_DOFS; ++l_dof ) {
     l_derivativesBuffer[l_dof] = i_degreesOfFreedom[l_dof];
     o_timeIntegrated[l_dof]  = i_degreesOfFreedom[l_dof] * l_scalar;
-  }
-  for( unsigned int l_dof = NUMBER_OF_ALIGNED_DOFS; l_dof < NUMBER_OF_ALIGNED_DERS; l_dof++ ) {
-    l_derivativesBuffer[l_dof] = 0.0;
   }
 #ifndef NDEBUG
 #ifdef _OPENMP
@@ -95,15 +92,17 @@ void seissol::kernels::Time::computeAder( double                      i_timeStep
   libxsmm_num_total_flops += NUMBER_OF_ALIGNED_DOFS;
 #endif
 
-  // stream out frist derivative (order 0)
+  // stream out first derivative (order 0)
   if ( o_timeDerivatives != NULL ) {
-    streamstore(NUMBER_OF_ALIGNED_DOFS, i_degreesOfFreedom, o_timeDerivatives);
+    streamstore(NUMBER_OF_ALIGNED_PHYSICAL_DOFS, i_degreesOfFreedom, o_timeDerivatives);
   }
 
   // compute all derivatives and contributions to the time integrated DOFs
   for( unsigned l_derivative = 1; l_derivative < CONVERGENCE_ORDER; l_derivative++ ) {
-    real const* lastDerivative = l_derivativesBuffer + (l_derivative-1) * NUMBER_OF_ALIGNED_DOFS;
-    real* currentDerivative = l_derivativesBuffer + l_derivative * NUMBER_OF_ALIGNED_DOFS;
+    real const* lastDerivative = l_derivativesBuffer + ((l_derivative+1) % 2) * NUMBER_OF_ALIGNED_DOFS;
+    real* currentDerivative = l_derivativesBuffer + (l_derivative % 2) * NUMBER_OF_ALIGNED_DOFS;
+    memset(currentDerivative, 0, NUMBER_OF_ALIGNED_DOFS * sizeof(real));
+
     seissol::generatedKernels::derivative(
       local->starMatrices[0],
       local->starMatrices[1],
@@ -116,7 +115,7 @@ void seissol::kernels::Time::computeAder( double                      i_timeStep
     );
 
     for (int mech = NUMBER_OF_RELAXATION_MECHANISMS-1; mech >= 0; --mech) {
-      unsigned mechOffset = NUMBER_OF_ALIGNED_ELASTIC_DOFS + mech * NUMBER_OF_ALIGNED_MECHANISM_DOFS;
+      unsigned mechOffset = NUMBER_OF_ALIGNED_PHYSICAL_DOFS + mech * NUMBER_OF_ALIGNED_MECHANISM_DOFS;
       
       seissol::generatedKernels::source(  local->specific.ET + mech * seissol::model::ET::reals,
                                           lastDerivative + mechOffset,
@@ -125,7 +124,7 @@ void seissol::kernels::Time::computeAder( double                      i_timeStep
       XYmSt(  local->specific.omega[mech],
               NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
               NUMBER_OF_MECHANISM_QUANTITIES,
-              currentDerivative + NUMBER_OF_ALIGNED_ELASTIC_DOFS,
+              currentDerivative + NUMBER_OF_ALIGNED_PHYSICAL_DOFS,
               NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
               lastDerivative + mechOffset,
               NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
@@ -137,17 +136,25 @@ void seissol::kernels::Time::computeAder( double                      i_timeStep
     
     real* derivativesStore = NULL;
     if (o_timeDerivatives != NULL) {
-      derivativesStore = o_timeDerivatives + l_derivative * NUMBER_OF_ALIGNED_DOFS;
+      derivativesStore = o_timeDerivatives + l_derivative * NUMBER_OF_ALIGNED_PHYSICAL_DOFS;
     }
 
     SXtYp(  l_scalar,
             NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
-            NUMBER_OF_QUANTITIES,
+            NUMBER_OF_PHYSICAL_QUANTITIES,
             currentDerivative,
             NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
             o_timeIntegrated,
             NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
             derivativesStore );
+
+    SXtYp(  l_scalar,
+            NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
+            NUMBER_OF_QUANTITIES - NUMBER_OF_PHYSICAL_QUANTITIES,
+            currentDerivative + NUMBER_OF_ALIGNED_PHYSICAL_DOFS,
+            NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
+            o_timeIntegrated + NUMBER_OF_ALIGNED_PHYSICAL_DOFS,
+            NUMBER_OF_ALIGNED_BASIS_FUNCTIONS );
   }
 }
 

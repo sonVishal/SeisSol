@@ -253,7 +253,7 @@ CONTAINS
     TYPE (tDiscretization)         :: DISC
     TYPE (tInputOutput)            :: IO
     REAL                           :: dt, time, localpicktime
-    REAL                           :: TaylorDOF(DISC%Galerkin%nDegFrRec,EQN%nVarTotal,0:DISC%Galerkin%nPolyRec)
+    REAL                           :: TaylorDOF(DISC%Galerkin%nDegFrRec,EQN%nVar,0:DISC%Galerkin%nPolyRec)
     REAL,OPTIONAL                  :: dt_op, time_op
     INTEGER                        :: j
     !--------------------------------------------------------------------------
@@ -409,7 +409,7 @@ CONTAINS
     TYPE (tInputOutput)       :: IO
     REAL                      :: time, localpicktime
     REAL                      :: state(EQN%nVarTotal), state_rot(9)
-    REAL                      :: TaylorDOF(DISC%Galerkin%nDegFrRec,EQN%nVarTotal,0:DISC%Galerkin%nPolyRec)
+    REAL                      :: TaylorDOF(DISC%Galerkin%nDegFrRec,EQN%nVar,0:DISC%Galerkin%nPolyRec)
     INTEGER                   :: j
     !--------------------------------------------------------------------------
     REAL, POINTER             :: cPoly3D(:,:,:,:,:)         => NULL()         ! Pointer to basis functions coeff
@@ -419,7 +419,7 @@ CONTAINS
     REAL                      :: x(MESH%nVertexMax), y(MESH%nVertexMax), z(MESH%nVertexMax)
     REAL                      :: xP, yP, zP, xi, eta, zeta
     REAL                      :: DDX(3), DDY(3), DDZ(3)
-    REAL                      :: InterpDOF(DISC%Galerkin%nDegFrRec,EQN%nVarTotal)
+    REAL                      :: InterpDOF(DISC%Galerkin%nDegFrRec,EQN%nVar)
     REAL                      :: tau
     REAL                      :: dtk(0:DISC%Galerkin%nPoly), dtk_tmp(0:DISC%Galerkin%nPoly)
     REAL                      :: XYZcPoly(EQN%nVar,0:DISC%Galerkin%nPolyRec,0:DISC%Galerkin%nPolyRec,0:DISC%Galerkin%nPolyRec)

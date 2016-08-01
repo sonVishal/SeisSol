@@ -79,6 +79,7 @@
 #include <Solver/Interoperability.h>
 #include <SourceTerm/PointSource.h>
 #include <Kernels/TimeCommon.h>
+#include <Kernels/denseMatrixOps.hpp>
 
 extern long long g_SeisSolNonZeroFlopsLocal;
 extern long long g_SeisSolHardwareFlopsLocal;
@@ -394,9 +395,6 @@ void seissol::time_stepping::TimeCluster::computeLocalIntegration( seissol::init
 
   // local integration buffer
   real l_integrationBuffer[NUMBER_OF_ALIGNED_DOFS] __attribute__((aligned(ALIGNMENT)));
-
-  // pointer for the call of the ADER-function
-  real *l_bufferPointer;
   
   real                (*dofs)[NUMBER_OF_ALIGNED_DOFS] = i_layerData.var(m_lts->dofs);
   real**                buffers                       = i_layerData.var(m_lts->buffers);
@@ -405,54 +403,43 @@ void seissol::time_stepping::TimeCluster::computeLocalIntegration( seissol::init
   CellLocalInformation* cellInformation               = i_layerData.var(m_lts->cellInformation);
 
 #ifdef _OPENMP
-  #pragma omp parallel for private(l_bufferPointer, l_integrationBuffer) schedule(static)
+  #pragma omp parallel for private(l_integrationBuffer) schedule(static)
 #endif
   for( unsigned int l_cell = 0; l_cell < i_layerData.getNumberOfCells(); l_cell++ ) {
     // overwrite cell buffer
     // TODO: Integrate this step into the kernel
 
     bool l_buffersProvided = (cellInformation[l_cell].ltsSetup >> 8)%2 == 1; // buffers are provided
-    bool l_resetBuffers = l_buffersProvided && ( (cellInformation[l_cell].ltsSetup >> 10) %2 == 0 || m_resetLtsBuffers ); // they should be reset
-
-    if( l_resetBuffers ) {
-      // assert presence of the buffer
-      assert( buffers[l_cell] != NULL );
-
-      l_bufferPointer = buffers[l_cell];
-    }
-    // work on local buffer
-    else {
-      l_bufferPointer = l_integrationBuffer;
-    }
+    bool l_resetBuffers = ( (cellInformation[l_cell].ltsSetup >> 10) %2 == 0 || m_resetLtsBuffers ); // they should be reset
 
 #ifdef REQUIRE_SOURCE_MATRIX
   m_timeKernel.computeAder( m_timeStepWidth,
                             m_globalData,
                             &localIntegration[l_cell],
                             dofs[l_cell],
-                            l_bufferPointer,
+                            l_integrationBuffer,
                             derivatives[l_cell] );
   m_localKernel.computeIntegral( cellInformation[l_cell].faceTypes,
                                  m_globalData,
                                  &localIntegration[l_cell],
-                                 l_bufferPointer,
+                                 l_integrationBuffer,
                                  dofs[l_cell] );
 #else
     m_timeKernel.computeAder(              m_timeStepWidth,
                                            m_globalData->stiffnessMatricesTransposed,
                                            dofs[l_cell],
                                            localIntegration[l_cell].starMatrices,
-                                           l_bufferPointer,
+                                           l_integrationBuffer,
                                            derivatives[l_cell] );
 
     m_localKernel.computeIntegral(         m_globalData->stiffnessMatrices,
-                                           l_bufferPointer,
+                                           l_integrationBuffer,
                                            localIntegration[l_cell].starMatrices,
                                            dofs[l_cell] );
 
     m_neighborKernel.computeLocalIntegral( cellInformation[l_cell].faceTypes,
                                            m_globalData->fluxMatrices,
-                                           l_bufferPointer,
+                                           l_integrationBuffer,
                                            localIntegration[l_cell].nApNm1,
 #ifdef ENABLE_STREAM_MATRIX_PREFETCH
                                            dofs[l_cell],
@@ -462,16 +449,16 @@ void seissol::time_stepping::TimeCluster::computeLocalIntegration( seissol::init
                                            dofs[l_cell] );
 #endif // ENABLE_STREAM_MATRIX_PREFETCH
 #endif // REQUIRE_SOURCE_MATRIX
-
-    // update lts buffers if required
-    // TODO: Integrate this step into the kernel
-    if( !l_resetBuffers && l_buffersProvided ) {
-      // assert presence of the buffer
+    if (l_buffersProvided) {
       assert( buffers[l_cell] != NULL );
 
-      for( unsigned int l_dof = 0; l_dof < NUMBER_OF_ALIGNED_DOFS; l_dof++ ) {
-        buffers[l_cell][l_dof] += l_integrationBuffer[l_dof];
-      }
+      if (l_resetBuffers) {
+        kernels::streamstore(NUMBER_OF_ALIGNED_PHYSICAL_DOFS, l_integrationBuffer, buffers[l_cell]);
+      } else {
+        for( unsigned int l_dof = 0; l_dof < NUMBER_OF_ALIGNED_PHYSICAL_DOFS; l_dof++ ) {
+          buffers[l_cell][l_dof] += l_integrationBuffer[l_dof];
+        }
+      }      
     }
   }
 }

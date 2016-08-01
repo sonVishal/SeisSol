@@ -607,8 +607,8 @@ void seissol::initializers::MemoryManager::initializeCommunicationStructure() {
       unsigned int l_numberOfBuffers     = m_meshStructure[tc].numberOfGhostRegionCells[l_region] - l_numberOfDerivatives;
 
       // set size
-      m_meshStructure[tc].ghostRegionSizes[l_region] = NUMBER_OF_ALIGNED_DOFS * l_numberOfBuffers +
-                                                       NUMBER_OF_ALIGNED_DERS * l_numberOfDerivatives;
+      m_meshStructure[tc].ghostRegionSizes[l_region] = NUMBER_OF_ALIGNED_PHYSICAL_DOFS * l_numberOfBuffers +
+                                                       NUMBER_OF_ALIGNED_PHYSICAL_DERS * l_numberOfDerivatives;
 
       // update the pointer
       ghostStart += m_meshStructure[tc].ghostRegionSizes[l_region];
@@ -645,8 +645,8 @@ void seissol::initializers::MemoryManager::initializeCommunicationStructure() {
       assert( m_meshStructure[tc].copyRegions[l_region] != NULL );
 
       // set size
-      m_meshStructure[tc].copyRegionSizes[l_region] = NUMBER_OF_ALIGNED_DOFS * l_numberOfBuffers +
-                                                      NUMBER_OF_ALIGNED_DERS * l_numberOfDerivatives;
+      m_meshStructure[tc].copyRegionSizes[l_region] = NUMBER_OF_ALIGNED_PHYSICAL_DOFS * l_numberOfBuffers +
+                                                      NUMBER_OF_ALIGNED_PHYSICAL_DERS * l_numberOfDerivatives;
 
       // jump over region
       l_offset += m_meshStructure[tc].numberOfCopyRegionCells[l_region];
@@ -762,7 +762,7 @@ void seissol::initializers::MemoryManager::touchBuffersDerivatives( Layer& layer
     // touch buffers
     real* buffer = buffers[cell];
     if (buffer != NULL) {
-      for (unsigned dof = 0; dof < NUMBER_OF_ALIGNED_DOFS; ++dof) {
+      for (unsigned dof = 0; dof < NUMBER_OF_ALIGNED_PHYSICAL_DOFS; ++dof) {
           // zero time integration buffers
           buffer[dof] = (real) 0;
       }
@@ -771,7 +771,7 @@ void seissol::initializers::MemoryManager::touchBuffersDerivatives( Layer& layer
     // touch derivatives
     real* derivative = derivatives[cell];
     if (derivative != NULL) {
-      for (unsigned dof = 0; dof < NUMBER_OF_ALIGNED_DERS; ++dof ) {
+      for (unsigned dof = 0; dof < NUMBER_OF_ALIGNED_PHYSICAL_DERS; ++dof ) {
         derivative[dof] = (real) 0;
       }
     }
@@ -819,15 +819,15 @@ void seissol::initializers::MemoryManager::initializeMemoryLayout()
     size_t l_interiorSize = 0;
 #ifdef USE_MPI
     for( unsigned int l_region = 0; l_region < m_meshStructure[tc].numberOfRegions; l_region++ ) {
-      l_ghostSize    += sizeof(real) * NUMBER_OF_ALIGNED_DOFS * m_numberOfGhostRegionBuffers[tc][l_region];
-      l_ghostSize    += sizeof(real) * NUMBER_OF_ALIGNED_DERS * m_numberOfGhostRegionDerivatives[tc][l_region];
+      l_ghostSize    += sizeof(real) * NUMBER_OF_ALIGNED_PHYSICAL_DOFS * m_numberOfGhostRegionBuffers[tc][l_region];
+      l_ghostSize    += sizeof(real) * NUMBER_OF_ALIGNED_PHYSICAL_DERS * m_numberOfGhostRegionDerivatives[tc][l_region];
 
-      l_copySize     += sizeof(real) * NUMBER_OF_ALIGNED_DOFS * m_numberOfCopyRegionBuffers[tc][l_region];
-      l_copySize     += sizeof(real) * NUMBER_OF_ALIGNED_DERS * m_numberOfCopyRegionDerivatives[tc][l_region];
+      l_copySize     += sizeof(real) * NUMBER_OF_ALIGNED_PHYSICAL_DOFS * m_numberOfCopyRegionBuffers[tc][l_region];
+      l_copySize     += sizeof(real) * NUMBER_OF_ALIGNED_PHYSICAL_DERS * m_numberOfCopyRegionDerivatives[tc][l_region];
     }
 #endif // USE_MPI
-    l_interiorSize += sizeof(real) * NUMBER_OF_ALIGNED_DOFS * m_numberOfInteriorBuffers[tc];
-    l_interiorSize += sizeof(real) * NUMBER_OF_ALIGNED_DERS * m_numberOfInteriorDerivatives[tc];
+    l_interiorSize += sizeof(real) * NUMBER_OF_ALIGNED_PHYSICAL_DOFS * m_numberOfInteriorBuffers[tc];
+    l_interiorSize += sizeof(real) * NUMBER_OF_ALIGNED_PHYSICAL_DERS * m_numberOfInteriorDerivatives[tc];
     
     cluster.child<Ghost>().setBucketSize(m_lts.buffersDerivatives, l_ghostSize);
     cluster.child<Copy>().setBucketSize(m_lts.buffersDerivatives, l_copySize);

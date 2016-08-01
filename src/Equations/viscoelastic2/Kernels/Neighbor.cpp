@@ -113,7 +113,7 @@ void seissol::kernels::Neighbor::computeNeighborsIntegral(  enum faceType const 
   
   SXtYp(  1.0,
           NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
-          NUMBER_OF_ELASTIC_QUANTITIES,
+          NUMBER_OF_PHYSICAL_QUANTITIES,
           reducedDofs,
           NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
           io_degreesOfFreedom,
@@ -123,9 +123,9 @@ void seissol::kernels::Neighbor::computeNeighborsIntegral(  enum faceType const 
     SXtYp(  neighbor->specific.omega[mech],
             NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
             NUMBER_OF_MECHANISM_QUANTITIES,
-            &reducedDofs[NUMBER_OF_ALIGNED_ELASTIC_DOFS],
+            &reducedDofs[NUMBER_OF_ALIGNED_PHYSICAL_DOFS],
             NUMBER_OF_ALIGNED_BASIS_FUNCTIONS,
-            &io_degreesOfFreedom[NUMBER_OF_ALIGNED_ELASTIC_DOFS + mech * NUMBER_OF_ALIGNED_MECHANISM_DOFS],
+            &io_degreesOfFreedom[NUMBER_OF_ALIGNED_PHYSICAL_DOFS + mech * NUMBER_OF_ALIGNED_MECHANISM_DOFS],
             NUMBER_OF_ALIGNED_BASIS_FUNCTIONS );
   }
 }
@@ -161,8 +161,8 @@ void seissol::kernels::Neighbor::flopsNeighborsIntegral( const enum faceType  i_
   
   /* Y = 1.0 * X + Y == 1 nonzero flop, 2 hardware flops
    */
-  o_nonZeroFlops += NUMBER_OF_BASIS_FUNCTIONS * NUMBER_OF_ELASTIC_QUANTITIES;
-  o_hardwareFlops += NUMBER_OF_ALIGNED_BASIS_FUNCTIONS * NUMBER_OF_ELASTIC_QUANTITIES * 2;
+  o_nonZeroFlops += NUMBER_OF_BASIS_FUNCTIONS * NUMBER_OF_PHYSICAL_QUANTITIES;
+  o_hardwareFlops += NUMBER_OF_ALIGNED_BASIS_FUNCTIONS * NUMBER_OF_PHYSICAL_QUANTITIES * 2;
 
   /* Y = omega * X * Y == 2 nonzero and hardware flops
    */
@@ -176,7 +176,7 @@ unsigned seissol::kernels::Neighbor::bytesNeighborsIntegral()
   unsigned reals = 0;
 
   // 4 * tElasticDOFS load, DOFs load, DOFs write
-  reals += 4 * NUMBER_OF_ALIGNED_ELASTIC_DOFS + 2 * NUMBER_OF_ALIGNED_DOFS;
+  reals += 4 * NUMBER_OF_ALIGNED_PHYSICAL_DOFS + 2 * NUMBER_OF_ALIGNED_DOFS;
   // flux solvers load
   reals += 4 * seissol::model::AminusT::reals;
   

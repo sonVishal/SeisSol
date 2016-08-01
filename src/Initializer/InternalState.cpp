@@ -138,15 +138,15 @@ void seissol::initializers::InternalState::setUpLayerPointers(       unsigned in
       // set pointers and increase conunters
       if( (i_cellLocalInformation[l_cell].ltsSetup >> 8 ) % 2 ) {
         o_buffers[l_cell] = i_layerMemory + l_offset
-                                          + l_bufferCounter * NUMBER_OF_ALIGNED_DOFS;
+                                          + l_bufferCounter * NUMBER_OF_ALIGNED_PHYSICAL_DOFS;
         l_bufferCounter++;
       }
       else o_buffers[l_cell] = NULL;
 
       if( (i_cellLocalInformation[l_cell].ltsSetup >> 9 ) % 2 ) {
         o_derivatives[l_cell] = i_layerMemory + l_offset 
-                                              + i_numberOfBuffers[l_region] * NUMBER_OF_ALIGNED_DOFS
-                                              + l_derivativeCounter * NUMBER_OF_ALIGNED_DERS;
+                                              + i_numberOfBuffers[l_region] * NUMBER_OF_ALIGNED_PHYSICAL_DOFS
+                                              + l_derivativeCounter * NUMBER_OF_ALIGNED_PHYSICAL_DERS;
         l_derivativeCounter++;
       }
       else o_derivatives[l_cell] = NULL;
@@ -158,8 +158,8 @@ void seissol::initializers::InternalState::setUpLayerPointers(       unsigned in
 
     // update offsets
     l_firstRegionCell = l_firstNonRegionCell;
-    l_offset += i_numberOfBuffers[l_region]     * NUMBER_OF_ALIGNED_DOFS +
-                i_numberOfDerivatives[l_region] * NUMBER_OF_ALIGNED_DERS;
+    l_offset += i_numberOfBuffers[l_region]     * NUMBER_OF_ALIGNED_PHYSICAL_DOFS +
+                i_numberOfDerivatives[l_region] * NUMBER_OF_ALIGNED_PHYSICAL_DERS;
   }
 }
 

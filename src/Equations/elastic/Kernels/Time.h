@@ -284,21 +284,21 @@ class seissol::kernels::Time {
      **/
     template<typename real_from, typename real_to>
     static void convertAlignedCompressedTimeDerivatives( const real_from *i_compressedDerivatives,
-                                                               real_to    o_fullDerivatives[CONVERGENCE_ORDER][NUMBER_OF_DOFS] )
+                                                               real_to    o_fullDerivatives[CONVERGENCE_ORDER][NUMBER_OF_PHYSICAL_DOFS] )
     {
       unsigned int l_firstEntry = 0;
 
       for( unsigned int l_order = 0; l_order < CONVERGENCE_ORDER; l_order++ ) {
         copySubMatrix( &i_compressedDerivatives[l_firstEntry],
                         getNumberOfBasisFunctions( CONVERGENCE_ORDER-l_order ),
-                        NUMBER_OF_QUANTITIES,
+                        NUMBER_OF_PHYSICAL_QUANTITIES,
                         getNumberOfAlignedBasisFunctions( CONVERGENCE_ORDER-l_order ),
                         o_fullDerivatives[l_order],
                         NUMBER_OF_BASIS_FUNCTIONS,
-                        NUMBER_OF_QUANTITIES,
+                        NUMBER_OF_PHYSICAL_QUANTITIES,
                         NUMBER_OF_BASIS_FUNCTIONS );
 
-        l_firstEntry += getNumberOfAlignedBasisFunctions( CONVERGENCE_ORDER-l_order ) * NUMBER_OF_QUANTITIES;
+        l_firstEntry += getNumberOfAlignedBasisFunctions( CONVERGENCE_ORDER-l_order ) * NUMBER_OF_PHYSICAL_QUANTITIES;
       }
     }
 };

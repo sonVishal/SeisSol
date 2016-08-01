@@ -121,9 +121,9 @@ MODULE Friction_mod
     REAL        :: godunov_state(DISC%Galerkin%nDegFr,EQN%nVar)               ! Auxilliary variable              !
     REAL        :: auxMatrix(EQN%nVar,EQN%nVar)                               ! Auxilliary matrix                !
     REAL        :: AniVec(3,3)
-    REAL        :: TaylorDOF(DISC%Galerkin%nDegFr,EQN%nVarTotal,0:DISC%Galerkin%nPoly)  ! time - taylorseries for DOF
-    REAL        :: Taylor1(DISC%Galerkin%nDegFr,EQN%nVarTotal,0:DISC%Galerkin%nPoly)
-    REAL        :: Taylor2(DISC%Galerkin%nDegFr,EQN%nVarTotal,0:DISC%Galerkin%nPoly)
+    REAL        :: TaylorDOF(DISC%Galerkin%nDegFr,EQN%nVar,0:DISC%Galerkin%nPoly)  ! time - taylorseries for DOF
+    REAL        :: Taylor1(DISC%Galerkin%nDegFr,EQN%nVar,0:DISC%Galerkin%nPoly)
+    REAL        :: Taylor2(DISC%Galerkin%nDegFr,EQN%nVar,0:DISC%Galerkin%nPoly)
     REAL        :: BndVar1(DISC%Galerkin%nDegFr,EQN%nVar,0:DISC%Galerkin%nPoly)
     REAL        :: BndVar2(DISC%Galerkin%nDegFr,EQN%nVar,0:DISC%Galerkin%nPoly)    
     REAL        :: NorStressGP(1:DISC%Galerkin%nBndGP,1:DISC%Galerkin%nTimeGP)
@@ -138,8 +138,8 @@ MODULE Friction_mod
     REAL        :: UVelDOF(DISC%Galerkin%nDegFr),UVel_NgbDOF(DISC%Galerkin%nDegFr)
     REAL        :: rho, rho_neig, mu, mu_neig, lambda, lambda_neig, rho_minus
     REAL        :: geoSurface
-    REAL        :: TimeIntDof_iElem(DISC%Galerkin%nDegFr,EQN%nVarTotal)            ! Time integrated dof
-    REAL        :: TimeIntDof_iNeigh(DISC%Galerkin%nDegFr,EQN%nVarTotal)           ! Time integrated dof
+    REAL        :: TimeIntDof_iElem(DISC%Galerkin%nDegFr,EQN%nVar)            ! Time integrated dof
+    REAL        :: TimeIntDof_iNeigh(DISC%Galerkin%nDegFr,EQN%nVar)           ! Time integrated dof
     REAL        :: FluxInt(DISC%Galerkin%nDegFr,DISC%Galerkin%nDegFr)         ! auxilary variable to store Flux Integration
     REAL        :: phi_array(DISC%Galerkin%nDegFr,DISC%Galerkin%nBndGP)
     !
@@ -759,7 +759,7 @@ MODULE Friction_mod
     !-------------------------------------------------------------------------!
     ! Local variable declaration
     REAL        :: godunov_state(DISC%Galerkin%nDegFr,9)                      !< Godunov state
-    REAL        :: TimeIntDof(DISC%Galerkin%nDegFr,EQN%nVarTotal)             !< Time integrated dof
+    REAL        :: TimeIntDof(DISC%Galerkin%nDegFr,EQN%nVar)             !< Time integrated dof
     REAL        :: Trac_XY_DOF(:)                                             !< Time integrated dof
     REAL        :: Trac_XZ_DOF(:)                                             !< Time integrated dof
     REAL        :: NorStressDOF(:)                                            !< Time integrated dof

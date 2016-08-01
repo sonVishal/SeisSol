@@ -91,8 +91,8 @@ namespace seissol {
      **/
     template<typename real_from, typename real_to>
     void convertAlignedDofs( const real_from i_alignedDofs[   NUMBER_OF_ALIGNED_DOFS],
-                                          real_to   o_unalignedDofs[ NUMBER_OF_DOFS] ) {
-      for( unsigned int l_quantity = 0; l_quantity < NUMBER_OF_QUANTITIES; l_quantity++ ) {
+                                          real_to   o_unalignedDofs[ NUMBER_OF_PHYSICAL_DOFS] ) {
+      for( unsigned int l_quantity = 0; l_quantity < NUMBER_OF_PHYSICAL_QUANTITIES; l_quantity++ ) {
         for( unsigned int l_basisFunction = 0; l_basisFunction < NUMBER_OF_BASIS_FUNCTIONS; l_basisFunction++ ) {
           o_unalignedDofs[l_quantity*NUMBER_OF_BASIS_FUNCTIONS + l_basisFunction] = i_alignedDofs[l_quantity*NUMBER_OF_ALIGNED_BASIS_FUNCTIONS + l_basisFunction];
         }

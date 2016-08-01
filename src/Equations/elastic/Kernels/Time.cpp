@@ -92,7 +92,7 @@ seissol::kernels::Time::Time() {
     m_numberOfAlignedBasisFunctions[l_order] = getNumberOfAlignedBasisFunctions( CONVERGENCE_ORDER-l_order, ALIGNMENT );
 
     if( l_order > 0 ) {
-      m_derivativesOffsets[l_order]  =  m_numberOfAlignedBasisFunctions[l_order-1] * NUMBER_OF_QUANTITIES;
+      m_derivativesOffsets[l_order]  =  m_numberOfAlignedBasisFunctions[l_order-1] * NUMBER_OF_PHYSICAL_QUANTITIES;
       m_derivativesOffsets[l_order] +=  m_derivativesOffsets[l_order-1];
     }
   }

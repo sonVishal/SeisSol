@@ -582,8 +582,8 @@ void seissol::initializers::time_stepping::LtsLayout::normalizeClustering() {
 #endif
   }
 
-  logInfo() << "Performed a total of" << l_totalMaximumDifference << "reductions" << "for maximum"
-            << "difference in" << m_cells.size() << "cells.";
+  logInfo() << "Performed a total of" << l_totalMaximumDifference + l_totalDynamicRupture + l_totalSingleBuffer << "reductions for normalisation in"
+            << m_cells.size() << "cells.";
 }
 
 void seissol::initializers::time_stepping::LtsLayout::getTheoreticalSpeedup( double &o_perCellTimeStepWidths,

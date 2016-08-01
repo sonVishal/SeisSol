@@ -482,7 +482,7 @@ CONTAINS
     REAL                           :: state( EQN%nVarTotal), state_rot(9)
     REAL                           :: stateToWrite( EQN%nVarTotal ), stateToWrite_rot(9)  ! local variables to avoid fortran runtime warnings when writing output
     REAL                           :: PGD_tot, PGV_tot, PGA_tot
-    REAL                           :: TaylorDOF(DISC%Galerkin%nDegFrRec,EQN%nVarTotal,0:DISC%Galerkin%nPolyRec)
+    REAL                           :: TaylorDOF(DISC%Galerkin%nDegFrRec,EQN%nVar,0:DISC%Galerkin%nPolyRec)
     REAL                           :: localpicktime
     INTEGER                        :: allocstat, stat
     INTEGER                        :: i, j, k, n, l, h, g, m

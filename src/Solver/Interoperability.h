@@ -271,7 +271,7 @@ class seissol::Interoperability {
     * @param o_timeDerivatives time derivatives in deprecated full storage scheme (including zero blocks).
     **/
    void getTimeDerivatives( int    i_meshId,
-                            double  o_timeDerivatives[CONVERGENCE_ORDER][NUMBER_OF_DOFS] );
+                            double  o_timeDerivatives[CONVERGENCE_ORDER][NUMBER_OF_PHYSICAL_DOFS] );
 
    /**
     * Gets the time derivatives and integrated DOFs of two face neighbors.
@@ -287,10 +287,10 @@ class seissol::Interoperability {
    void getFaceDerInt( int    _meshId,
                        int    i_localFaceId,
                        double i_timeStepWidth,
-                       double o_timeDerivativesCell[CONVERGENCE_ORDER][NUMBER_OF_DOFS],
-                       double o_timeDerivativesNeighbor[CONVERGENCE_ORDER][NUMBER_OF_DOFS],
-                       double o_timeIntegratedCell[NUMBER_OF_DOFS],
-                       double o_timeIntegratedNeighbor[NUMBER_OF_DOFS] );
+                       double o_timeDerivativesCell[CONVERGENCE_ORDER][NUMBER_OF_PHYSICAL_DOFS],
+                       double o_timeDerivativesNeighbor[CONVERGENCE_ORDER][NUMBER_OF_PHYSICAL_DOFS],
+                       double o_timeIntegratedCell[NUMBER_OF_PHYSICAL_DOFS],
+                       double o_timeIntegratedNeighbor[NUMBER_OF_PHYSICAL_DOFS] );
 
    /**
     * Gets the DOFs.
