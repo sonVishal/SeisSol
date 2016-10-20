@@ -74,7 +74,7 @@ struct seissol::initializers::LTS {
   Variable<real[NUMBER_OF_ALIGNED_DOFS]>  dofs;
   Variable<real*>                         buffers;
   Variable<real*>                         derivatives;
-  Variable<real[9]>                       pstrain;
+  Variable<real[9]>                       integrals;
   Variable<CellLocalInformation>          cellInformation;
   Variable<real*[4]>                      faceNeighbors;
   Variable<LocalIntegrationData>          localIntegration;
