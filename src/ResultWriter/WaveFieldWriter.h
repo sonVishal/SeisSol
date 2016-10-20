@@ -258,6 +258,22 @@ public:
 			}
 		}
 
+		if (m_integrals) {
+			for (unsigned int i = WaveFieldWriterExecutor::NUM_LOWVARIABLES; i < WaveFieldWriterExecutor::NUM_LOWVARIABLES+9; i++) {
+				double* managedBuffer = async::Module<WaveFieldWriterExecutor,
+						WaveFieldInitParam, WaveFieldParam>::managedBuffer<double*>(m_variableBufferIds[1]+i);
+
+#ifdef _OPENMP
+				#pragma omp parallel for schedule(static)
+#endif // _OPENMP
+				for (unsigned int j = 0; j < 9; j++)
+					managedBuffer[j] = m_integrals[m_map[j]
+							* 9 + i-WaveFieldWriterExecutor::NUM_LOWVARIABLES];
+
+				sendBuffer(m_variableBufferIds[1]+i, m_numLowCells*sizeof(double));
+			}
+		}
+
 		WaveFieldParam param;
 		param.time = time;
 		call(param);
