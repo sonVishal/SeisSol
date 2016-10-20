@@ -476,6 +476,12 @@ void seissol::time_stepping::TimeCluster::computeLocalIntegration( seissol::init
   }
 }
 
+void integrateQuantities(const double i_timestep, double* io_integrals, double* i_dofs) {
+	for( int i = 0; i < 9; i++ ) {
+		io_integrals[i] += i_dofs[NUMBER_OF_ALIGNED_BASIS_FUNCTIONS*i]*i_timestep;
+	}
+}
+
 void seissol::time_stepping::TimeCluster::computeNeighboringIntegration( seissol::initializers::Layer&  i_layerData ) {
   SCOREP_USER_REGION( "computeNeighboringIntegration", SCOREP_USER_REGION_TYPE_FUNCTION )
   
@@ -588,6 +594,9 @@ void seissol::time_stepping::TimeCluster::computeNeighboringIntegration( seissol
                                          energy[l_cell],
                                          pstrain[l_cell] );
 #endif
+	integrateQuantities( m_timeStepWidth,
+			                 integrals[l_cell],
+			                 dofs[l_cell] );
   }
 }
 

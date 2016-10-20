@@ -74,6 +74,7 @@ struct seissol::initializers::LTS {
   Variable<real[NUMBER_OF_ALIGNED_DOFS]>  dofs;
   Variable<real*>                         buffers;
   Variable<real*>                         derivatives;
+  Variable<real[9]>                       pstrain;
   Variable<CellLocalInformation>          cellInformation;
   Variable<real*[4]>                      faceNeighbors;
   Variable<LocalIntegrationData>          localIntegration;
@@ -102,7 +103,8 @@ struct seissol::initializers::LTS {
     tree.addVar(              plasticity,   plasticityMask,                 1,      seissol::memory::Standard );
     tree.addVar(                  energy,   plasticityMask,     PAGESIZE_HEAP,      seissol::memory::Standard );
     tree.addVar(                 pstrain,   plasticityMask,     PAGESIZE_HEAP,      seissol::memory::Standard );
-    
+    tree.addVar(               integrals,  LayerMask(Ghost),    PAGESIZE_HEAP,      seissol::memory::Standard );
+
     tree.addBucket(buffersDerivatives,                          PAGESIZE_HEAP,      MEMKIND_TIMEDOFS );
   }
 };
