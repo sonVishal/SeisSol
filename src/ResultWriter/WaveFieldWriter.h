@@ -266,7 +266,7 @@ public:
 #ifdef _OPENMP
 				#pragma omp parallel for schedule(static)
 #endif // _OPENMP
-				for (unsigned int j = 0; j < 9; j++)
+				for (unsigned int j = 0; j < m_numLowCells; j++)
 					managedBuffer[j] = m_integrals[m_map[j]
 							* 9 + i-WaveFieldWriterExecutor::NUM_LOWVARIABLES];
 
