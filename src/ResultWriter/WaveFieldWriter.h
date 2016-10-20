@@ -99,6 +99,9 @@ class WaveFieldWriter : private async::Module<WaveFieldWriterExecutor, WaveField
 	/** Pointer to the plastic strain */
 	const double* m_pstrain;
 
+	/** Pointer to the integrals */
+	const double* m_integrals;
+
 	/** Mapping from the cell order to dofs order */
 	unsigned int* m_map;
 
@@ -138,7 +141,7 @@ public:
 		  m_numVariables(0),
 		  m_outputFlags(0L),
 		  m_numCells(0), m_numLowCells(0),
-		  m_dofs(0L), m_pstrain(0L),
+		  m_dofs(0L), m_pstrain(0L), m_integrals(0L),
 		  m_map(0L),
 		  m_lastTimeStep(-1),
 		  m_timeTolerance(0),

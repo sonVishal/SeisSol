@@ -247,7 +247,7 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 	unsigned int* lowCells = 0L;
 #endif // USE_MPI
 	const unsigned int* const_lowCells;
-	if (pstrain) {
+	if (pstrain || integrals) {
 		logInfo(rank) << "Initialize low order output";
 
 		// Refinement strategy (no refinement)
@@ -285,7 +285,7 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 
 		// Create data buffers
 		param.bufferIds[LOWVARIABLE0] = addBuffer(0L, pLowMeshRefiner->getNumCells() * sizeof(double));
-		for (unsigned int i = 1; i < WaveFieldWriterExecutor::NUM_LOWVARIABLES; i++)
+		for (unsigned int i = 1; i < WaveFieldWriterExecutor::NUM_LOWVARIABLES+9; i++)
 			addBuffer(0L, pLowMeshRefiner->getNumCells() * sizeof(double));
 
 		// Save number of cells
@@ -307,7 +307,7 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 	sendBuffer(param.bufferIds[CELLS], meshRefiner->getNumCells() * 4 * sizeof(unsigned int));
 	sendBuffer(param.bufferIds[VERTICES], meshRefiner->getNumVertices() * 3 * sizeof(double));
 
-	if (pstrain) {
+	if (pstrain || integrals) {
 		sendBuffer(param.bufferIds[LOWCELLS], pLowMeshRefiner->getNumCells() * 4 * sizeof(unsigned int));
 		sendBuffer(param.bufferIds[LOWVERTICES], pLowMeshRefiner->getNumVertices() * 3 * sizeof(double));
 	}
@@ -327,6 +327,7 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 	// Save dof/map pointer
 	m_dofs = dofs;
 	m_pstrain = pstrain;
+	m_integrals = integrals;
 	if (!m_extractRegion) {
 		m_map = map;
 	}
