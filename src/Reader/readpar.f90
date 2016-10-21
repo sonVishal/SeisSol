@@ -3176,6 +3176,9 @@ ALLOCATE( SpacePositionx(nDirac), &
       !------------------------------------------------------------------------
       TYPE (tInputOutput)           :: IO
 			!------------------------------------------------------------------------
+			! local Variables
+      INTEGER                       :: allocstat
+      !------------------------------------------------------------------------
       INTENT(INOUT)              		:: IO
       !------------------------------------------------------------------------
 			LOGICAL												:: iIntegrationMask(1:9)
@@ -3189,7 +3192,7 @@ ALLOCATE( SpacePositionx(nDirac), &
 			iIntegrationMask(:) = .FALSE.
 			!
       READ(IO%UNIT%FileIn, nml = Postprocessing)                                                            
-			ALLOCATE(IO%IntegrationMask(9),STAT=allocStat )                           !
+			ALLOCATE(IO%IntegrationMask(9),STAT=allocstat )                           !
        IF (allocStat .NE. 0) THEN                                               !
          logError(*) 'could not allocate IO%IntegrationMask in readpar!'				!
          STOP                                                                   !
