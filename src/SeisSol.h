@@ -176,6 +176,14 @@ public:
 	}
 
 	/**
+	 * Get the post processor module
+	 */
+	writer::PostProcessor& postProcessor()
+	{
+		return m_postProcessor;
+	}
+
+	/**
 	 * Set the mesh reader
 	 */
 	void setMeshReader(MeshReader* meshReader)

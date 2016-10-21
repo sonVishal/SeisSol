@@ -483,9 +483,7 @@ void seissol::Interoperability::enableWaveFieldOutput( double i_waveFieldInterva
 }
 
 void seissol::Interoperability::getIntegrationMask( int* i_integrationMask ) {
-  for (size_t i = 0; i < 9; i++) {
-      seissol::SeisSol::main.m_postProcessor.m_integrationMask[i] = i_integrationMask[i];
-  }
+  seissol::SeisSol::main.postProcessor().setIntegrationMask(i_integrationMask);
 }
 
 void seissol::Interoperability::enableCheckPointing( double i_checkPointInterval,
