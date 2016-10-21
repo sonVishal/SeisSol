@@ -14,6 +14,9 @@ private:
     bool m_integrationMask[9];
 public:
     PostProcessor (){
+        for (size_t i = 0; i < 9; i++) {
+            m_integrationMask[i] = false;
+        }
     }
     virtual ~PostProcessor () {
     }
