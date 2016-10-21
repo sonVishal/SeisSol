@@ -150,6 +150,8 @@ CONTAINS
     CALL readpar_discretisation(EQN,usMESH,DISC,SOURCE,IO)         !
     !                                                                        !
     CALL readpar_output(EQN,DISC,IO,CalledFromStructCode)          !
+		!
+	  CALL readpar_postprocessing(IO)          											 !
     !                                                                        !        
     CALL readpar_abort(DISC,IO)                                    !
     !                                                                        !        
@@ -3164,7 +3166,37 @@ ALLOCATE( SpacePositionx(nDirac), &
         logInfo(*) 'Actual timestep is min of dt_CFL and dt_fix. '                                                     
     !                                                                         
   END SUBROUTINE readpar_discretisation                              
-                                                                                                   
+  
+	!===========================================================================
+  ! P O S T P R O C E S S I N G               
+  !===========================================================================
+		SUBROUTINE readpar_postprocessing(IO)
+			!------------------------------------------------------------------------
+      IMPLICIT NONE 
+      !------------------------------------------------------------------------
+      TYPE (tInputOutput)           :: IO
+			!------------------------------------------------------------------------
+      INTENT(INOUT)              		:: IO
+      !------------------------------------------------------------------------
+			INTEGER												:: iIntegrationMask(1:9)
+			NAMELIST                      /Postprocessing/ iIntegrationMask
+			!------------------------------------------------------------------------  
+	    !                                                                       
+      logInfo(*) '<--------------------------------------------------------->'        
+      logInfo(*) '<  P O S T P R O C E S S I N G                            >'        
+      logInfo(*) '<--------------------------------------------------------->'
+			! Setting default values
+			iIntegrationMask(:) = 0
+			!
+      READ(IO%UNIT%FileIn, nml = Postprocessing)                                                            
+			ALLOCATE(IO%IntegrationMask(9),STAT=allocStat )                           !
+       IF (allocStat .NE. 0) THEN                                               !
+         logError(*) 'could not allocate IO%IntegrationMask in readpar!'				!
+         STOP                                                                   !
+       END IF
+      IO%IntegrationMask(1:9) = iIntegrationMask(1:9)
+		END SUBROUTINE readpar_postprocessing
+                                                                                                 
   !===========================================================================
   ! O U T P U T               
   !============================================================================
