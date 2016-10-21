@@ -76,7 +76,6 @@
 #include <list>
 #endif
 
-#include "SeisSol.h"
 #include <Initializer/typedefs.hpp>
 #include <SourceTerm/typedefs.hpp>
 #include <utils/logger.h>
