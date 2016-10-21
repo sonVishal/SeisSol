@@ -3189,7 +3189,7 @@ ALLOCATE( SpacePositionx(nDirac), &
       logInfo(*) '<  P O S T P R O C E S S I N G                            >'        
       logInfo(*) '<--------------------------------------------------------->'
 			! Setting default values
-			iIntegrationMask(:) = .FALSE.
+			IntegrationMask(:) = .FALSE.
 			!
       READ(IO%UNIT%FileIn, nml = Postprocessing)                                                            
 			ALLOCATE(IO%IntegrationMask(9),STAT=allocstat )                           !
