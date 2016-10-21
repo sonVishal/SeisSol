@@ -1,8 +1,6 @@
 #ifndef POST_PROCESSOR_H
 #define POST_PROCESSOR_H
 
-#include <iostream>
-
 namespace seissol
 {
 
@@ -18,9 +16,11 @@ public:
     virtual ~PostProcessor () {
         m_tmp = 0;
     }
-    void tmpFunc();
+    void integrateQuantities(const double i_timestep, double* io_integrals, double* i_dofs);
 };
+
 }
+
 }
 
 #endif // POST_PROCESSOR_H
