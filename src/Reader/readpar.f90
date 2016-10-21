@@ -3181,7 +3181,7 @@ ALLOCATE( SpacePositionx(nDirac), &
       !------------------------------------------------------------------------
       INTENT(INOUT)              		:: IO
       !------------------------------------------------------------------------
-			LOGICAL												:: IntegrationMask(1:9)
+			INTEGER												:: IntegrationMask(1:9)
 			NAMELIST                      /Postprocessing/ IntegrationMask
 			!------------------------------------------------------------------------  
 	    !                                                                       
@@ -3189,7 +3189,7 @@ ALLOCATE( SpacePositionx(nDirac), &
       logInfo(*) '<  P O S T P R O C E S S I N G                            >'        
       logInfo(*) '<--------------------------------------------------------->'
 			! Setting default values
-			IntegrationMask(:) = .FALSE.
+			IntegrationMask(:) = 0
 			!
       READ(IO%UNIT%FileIn, nml = Postprocessing)                                                            
 			ALLOCATE(IO%IntegrationMask(9),STAT=allocstat )                           !
