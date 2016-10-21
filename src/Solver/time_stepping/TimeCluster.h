@@ -33,21 +33,21 @@
  * This file is part of SeisSol.
  *
  * @author Alex Breuer (breuer AT mytum.de, http://www5.in.tum.de/wiki/index.php/Dipl.-Math._Alexander_Breuer)
- * 
+ *
  * @section LICENSE
  * Copyright (c) 2013-2015, SeisSol Group
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the copyright holder nor the names of its
  *    contributors may be used to endorse or promote products derived from this
  *    software without specific prior written permission.
@@ -76,6 +76,7 @@
 #include <list>
 #endif
 
+#include "SeisSol.h"
 #include <Initializer/typedefs.hpp>
 #include <SourceTerm/typedefs.hpp>
 #include <utils/logger.h>
@@ -156,20 +157,20 @@ private:
 
     /*
      * element data and mpi queues
-     */     
+     */
 #ifdef USE_MPI
     //! pending copy region sends
     std::list< MPI_Request* > m_sendQueue;
 
     //! pending ghost region receives
     std::list< MPI_Request* > m_receiveQueue;
-#endif    
+#endif
     seissol::initializers::TimeCluster* m_clusterData;
     seissol::initializers::LTS*         m_lts;
 
     //! receivers
     std::vector< int > m_receivers;
-    
+
     //! Mapping of cells to point sources
     sourceterm::CellToPointSourcesMapping const* m_cellToPointSources;
 
@@ -181,7 +182,7 @@ private:
 
     //! true if dynamic rupture faces are present
     bool m_dynamicRuptureFaces;
-    
+
     enum ComputePart {
       LocalInterior = 0,
       NeighborInterior,
@@ -191,7 +192,7 @@ private:
 #endif
       NUM_COMPUTE_PARTS
     };
-    
+
     long long m_flops_nonZero[NUM_COMPUTE_PARTS];
     long long m_flops_hardware[NUM_COMPUTE_PARTS];
 
@@ -388,10 +389,10 @@ private:
      * @param i_meshId mesh id of the point of interest.
      **/
     void addSource( unsigned int i_meshId );
-    
+
     /**
      * Sets the pointer to the cluster's point sources
-     * 
+     *
      * @param i_cellToPointSources Contains mappings of 1 cell offset to m point sources
      * @param i_numberOfCellToPointSourcesMappings Size of i_cellToPointSources
      * @param i_pointSources pointer to all point sources used on this cluster
@@ -463,12 +464,12 @@ private:
 
 #if defined(_OPENMP) && defined(USE_MPI) && defined(USE_COMM_THREAD)
     /**
-     * Tests for pending ghost layer communication, active when using communication thread 
+     * Tests for pending ghost layer communication, active when using communication thread
      **/
     void pollForGhostLayerReceives();
 
     /**
-     * Polls for pending copy layer communication, active when using communication thread 
+     * Polls for pending copy layer communication, active when using communication thread
      **/
     void pollForCopyLayerSends();
 
