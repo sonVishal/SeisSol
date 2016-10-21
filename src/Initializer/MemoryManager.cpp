@@ -37,17 +37,17 @@
  * @section LICENSE
  * Copyright (c) 2013-2015, SeisSol Group
  * All rights reserved.
- *
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
- *
+ * 
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *
+ * 
  * 3. Neither the name of the copyright holder nor the names of its
  *    contributors may be used to endorse or promote products derived from this
  *    software without specific prior written permission.
@@ -99,7 +99,7 @@ void seissol::initializers::MemoryManager::initialize()
 
   // allocate thread-local LTS integration buffers
   allocateIntegrationBufferLTS();
-
+  
 // if equations == viscoelastic
 // @TODO Remove ifdef and generalize initialization
 // @TODO This implementation doesn't backport the support for multiple copies of global data
@@ -147,10 +147,10 @@ void seissol::initializers::MemoryManager::initialize()
   unsigned int l_numberOfCopies = (l_numberOfThreads/NUMBER_OF_THREADS_PER_GLOBALDATA_COPY) + l_numberOfCopiesCeil;
   logInfo(0) << "Number of GlobalData copies: " << l_numberOfCopies;
 
-  m_globalDataCopies = new GlobalData[l_numberOfCopies];
+  m_globalDataCopies = new GlobalData[l_numberOfCopies]; 
 
   // initialize all copies
-#if 0
+#if 0 
   // use serial initialization -> first touch places everything in the corresponding NUMA nodes
   for ( unsigned int l_globalDataCopy = 0; l_globalDataCopy < l_numberOfCopies; l_globalDataCopy++ ) {
     initializeGlobalMatrices( i_matrixReader, m_globalDataCopies[l_globalDataCopy] );
@@ -220,11 +220,11 @@ void seissol::initializers::MemoryManager::initializeGlobalMatrix(          int 
       // jump over columns
       unsigned int l_position = l_column * i_leadingDimension;
       // jump over rows
-      l_position += l_row;
+      l_position += l_row; 
 
       // set the nonzero
       o_matrix[l_position] = i_values[l_entry];
-    }
+    } 
   }
 }
 
@@ -234,7 +234,7 @@ void seissol::initializers::MemoryManager::initializeGlobalMatrices( const seiss
    * Test whether LTS integation buffer was allocated
    **/
   if ( m_integrationBufferLTS == NULL ) {
-    logError() << "MemoryManager: allocateIntegrationBufferLTS need called before initializeGlobalMatrices!";
+    logError() << "MemoryManager: allocateIntegrationBufferLTS need called before initializeGlobalMatrices!"; 
   }
 
   /*
@@ -275,7 +275,7 @@ void seissol::initializers::MemoryManager::initializeGlobalMatrices( const seiss
       l_matrixValues[l_transposedStiff][l_entry] = -l_matrixValues[l_transposedStiff][l_entry];
     }
   }
-
+  
   // read the inverse mass matrix
   i_matrixReader.readGlobalMatrices( "inverseMass",
                                      l_matrixIds, l_matrixNames,
@@ -335,7 +335,7 @@ void seissol::initializers::MemoryManager::initializeGlobalMatrices( const seiss
 
     l_offset[l_matrix+7] = l_offset[l_matrix+6] + l_alignedReals;
   }
-
+  
   // inverse mass matrix
   l_alignedReals = seissol::kernels::getNumberOfAlignedReals( NUMBER_OF_BASIS_FUNCTIONS );
   l_offset[59] = l_offset[58] + l_alignedReals;
@@ -411,7 +411,7 @@ void seissol::initializers::MemoryManager::initializeGlobalMatrices( const seiss
                             l_matrixValues[l_fluxMatrix],
                             o_globalData.fluxMatrices[l_fluxMatrix] );
   }
-
+  
   /*
    * Initialize inverse mass matrix.
    */
@@ -463,7 +463,7 @@ void seissol::initializers::MemoryManager::correctGhostRegionSetups()
   for (unsigned tc = 0; tc < m_ltsTree.numChildren(); ++tc) {
     Layer& ghost = m_ltsTree.child(tc).child<Ghost>();
     CellLocalInformation* cellInformation = ghost.var(m_lts.cellInformation);
-
+    
     unsigned int l_offset = 0;
     for( unsigned int l_region = 0; l_region < m_meshStructure[tc].numberOfRegions; l_region++ ) {
       // iterate over ghost cells
@@ -617,7 +617,7 @@ void seissol::initializers::MemoryManager::initializeCommunicationStructure() {
 
   /*
    * copy layer
-   */
+   */   
   for (unsigned tc = 0; tc < m_ltsTree.numChildren(); ++tc) {
     Layer& copy = m_ltsTree.child(tc).child<Copy>();
     real** buffers = copy.var(m_lts.buffers);
@@ -663,14 +663,14 @@ void seissol::initializers::MemoryManager::initializeFaceNeighbors( unsigned    
 #else
   assert(layer.getLayerType() == Interior);
 #endif
-
+  
   // iterate over clusters
-
+  
   real** buffers = m_ltsTree.var(m_lts.buffers);          // faceNeighborIds are ltsIds and not layer-local
   real** derivatives = m_ltsTree.var(m_lts.derivatives);  // faceNeighborIds are ltsIds and not layer-local
   real *(*faceNeighbors)[4] = layer.var(m_lts.faceNeighbors);
   CellLocalInformation* cellInformation = layer.var(m_lts.cellInformation);
-
+    
   for (unsigned cell = 0; cell < layer.getNumberOfCells(); ++cell) {
     for (unsigned face = 0; face < 4; ++face) {
       if (  cellInformation[cell].faceTypes[face] == regular
@@ -783,16 +783,14 @@ void seissol::initializers::MemoryManager::fixateLtsTree( struct TimeStepping&  
 {
   // store mesh structure and the number of time clusters
   m_meshStructure = i_meshStructure;
-
+  
   // Setup tree variables
   m_lts.addTo(m_ltsTree);
-  Variable<real[9]> integrals;
-  m_lts.addVar(integrals, LayerMask(Ghost), PAGESIZE_HEAP, seissol::memory::Standard);
   m_ltsTree.setNumberOfTimeClusters(i_timeStepping.numberOfLocalClusters);
 
   /// From this point, the tree layout, variables, and buckets cannot be changed anymore
   m_ltsTree.fixate();
-
+  
   // Set number of cells and bucket sizes in ltstree
   for (unsigned tc = 0; tc < m_ltsTree.numChildren(); ++tc) {
     TimeCluster& cluster = m_ltsTree.child(tc);
@@ -830,12 +828,12 @@ void seissol::initializers::MemoryManager::initializeMemoryLayout()
 #endif // USE_MPI
     l_interiorSize += sizeof(real) * NUMBER_OF_ALIGNED_DOFS * m_numberOfInteriorBuffers[tc];
     l_interiorSize += sizeof(real) * NUMBER_OF_ALIGNED_DERS * m_numberOfInteriorDerivatives[tc];
-
+    
     cluster.child<Ghost>().setBucketSize(m_lts.buffersDerivatives, l_ghostSize);
     cluster.child<Copy>().setBucketSize(m_lts.buffersDerivatives, l_copySize);
     cluster.child<Interior>().setBucketSize(m_lts.buffersDerivatives, l_interiorSize);
   }
-
+  
   m_ltsTree.allocateBuckets();
 
   // initialize the internal state

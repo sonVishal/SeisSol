@@ -55,7 +55,6 @@
 
 #include "ResultWriter/AsyncIO.h"
 #include "ResultWriter/WaveFieldWriter.h"
-#include "ResultWriter/PostProcessor.h"
 
 #define SEISSOL_VERSION_STRING "SVN Mainline"
 
@@ -101,9 +100,6 @@ private:
 
 	/** Wavefield output module */
 	writer::WaveFieldWriter m_waveFieldWriter;
-
-	/** Wavefield output module */
-	writer::PostProcessor m_postProcessor;
 
 private:
 	/**
