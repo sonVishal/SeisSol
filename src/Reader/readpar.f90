@@ -150,8 +150,8 @@ CONTAINS
     CALL readpar_discretisation(EQN,usMESH,DISC,SOURCE,IO)         !
     !                                                                        !
     CALL readpar_output(EQN,DISC,IO,CalledFromStructCode)          !
-		!
-	  CALL readpar_postprocessing(IO)          											 !
+    !
+	CALL readpar_postprocessing(IO)          											 !
     !                                                                        !        
     CALL readpar_abort(DISC,IO)                                    !
     !                                                                        !        
@@ -3178,7 +3178,7 @@ ALLOCATE( SpacePositionx(nDirac), &
 			!------------------------------------------------------------------------
       INTENT(INOUT)              		:: IO
       !------------------------------------------------------------------------
-			INTEGER												:: iIntegrationMask(1:9)
+			LOGICAL												:: iIntegrationMask(1:9)
 			NAMELIST                      /Postprocessing/ iIntegrationMask
 			!------------------------------------------------------------------------  
 	    !                                                                       
@@ -3186,7 +3186,7 @@ ALLOCATE( SpacePositionx(nDirac), &
       logInfo(*) '<  P O S T P R O C E S S I N G                            >'        
       logInfo(*) '<--------------------------------------------------------->'
 			! Setting default values
-			iIntegrationMask(:) = 0
+			iIntegrationMask(:) = .FALSE.
 			!
       READ(IO%UNIT%FileIn, nml = Postprocessing)                                                            
 			ALLOCATE(IO%IntegrationMask(9),STAT=allocStat )                           !
