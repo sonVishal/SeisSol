@@ -234,6 +234,10 @@ class seissol::Interoperability {
 			  double* slip, double* slip1, double* slip2, double* state, double* strength,
 			  int numSides, int numBndGP, int refinement, int* outputMask,
               double* outputRegionBounds);
+   /**
+    * Gets the integration mask from the parameter file
+    **/
+   void getIntegrationMask( int* i_integrationMask );
 
    /**
     * Get the current dynamic rupture time step

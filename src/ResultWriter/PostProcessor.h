@@ -9,12 +9,11 @@ namespace writer
 
 class PostProcessor {
 private:
-    int m_tmp;
+    int m_integrationMask[9];
 public:
-    PostProcessor ():m_tmp(-1){
+    PostProcessor (){
     }
     virtual ~PostProcessor () {
-        m_tmp = 0;
     }
     void integrateQuantities(const double i_timestep, double* io_integrals, double* i_dofs);
 };
