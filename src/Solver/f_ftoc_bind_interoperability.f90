@@ -196,7 +196,7 @@ module f_ftoc_bind_interoperability
       real(kind=c_double), dimension(*), intent(in) :: i_state
       real(kind=c_double), dimension(*), intent(in) :: i_strength
       real(kind=c_double), dimension(*), intent(out) :: i_outputRegionBounds
-      logical(kind=c_int), dimension(*), intent(out) :: i_outputMask
+      integer(kind=c_int), dimension(*), intent(out) :: i_outputMask
       integer(kind=c_int), value                    :: i_numSides
       integer(kind=c_int), value                    :: i_numBndGP
       integer(kind=c_int), value                    :: i_refinement
