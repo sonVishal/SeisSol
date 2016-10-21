@@ -110,7 +110,6 @@ CONTAINS
     INTEGER                        :: nGraphVertex                             !
     INTEGER                        :: LocPoly                                  !
 	INTEGER						   :: IntegrationMask(1:9)                     !
-	INTEGER						   :: i
     INTEGER, POINTER               :: MetisWeight(:)                           !
     REAL                           :: AnelasticFactor(7,10)                    ! Factor of additional cost due to anelasticity
     REAL                           :: OrderFactor(7)                           ! Factor of additional cost due to order
