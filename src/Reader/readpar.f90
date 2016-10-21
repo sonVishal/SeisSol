@@ -151,7 +151,7 @@ CONTAINS
     !                                                                        !
     CALL readpar_output(EQN,DISC,IO,CalledFromStructCode)          !
     !
-	CALL readpar_postprocessing(IO)          											 !
+		CALL readpar_postprocessing(IO)          											 !
     !                                                                        !        
     CALL readpar_abort(DISC,IO)                                    !
     !                                                                        !        
@@ -3181,8 +3181,8 @@ ALLOCATE( SpacePositionx(nDirac), &
       !------------------------------------------------------------------------
       INTENT(INOUT)              		:: IO
       !------------------------------------------------------------------------
-			LOGICAL												:: iIntegrationMask(1:9)
-			NAMELIST                      /Postprocessing/ iIntegrationMask
+			LOGICAL												:: IntegrationMask(1:9)
+			NAMELIST                      /Postprocessing/ IntegrationMask
 			!------------------------------------------------------------------------  
 	    !                                                                       
       logInfo(*) '<--------------------------------------------------------->'        
@@ -3197,7 +3197,7 @@ ALLOCATE( SpacePositionx(nDirac), &
          logError(*) 'could not allocate IO%IntegrationMask in readpar!'				!
          STOP                                                                   !
        END IF
-      IO%IntegrationMask(1:9) = iIntegrationMask(1:9)
+      IO%IntegrationMask(1:9) = IntegrationMask(1:9)
 		END SUBROUTINE readpar_postprocessing
                                                                                                  
   !===========================================================================
@@ -3250,7 +3250,7 @@ ALLOCATE( SpacePositionx(nDirac), &
       nRecordPoints = 0
       energy_output_on = 0
       pickdt_energy = 1.0
-	  OutputRegionBounds(:) = 0.0
+	  	OutputRegionBounds(:) = 0.0
 !      RFileName = 'RecordPoints'
       pickDtType = 1
       PGMFlag = 0
