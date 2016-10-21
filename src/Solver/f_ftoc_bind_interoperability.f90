@@ -184,7 +184,7 @@ module f_ftoc_bind_interoperability
     subroutine c_interoperability_getIntegrationMask( i_integrationMask ) bind( C, name='c_interoperability_getIntegrationMask' )
       use iso_c_binding
       implicit none
-      logical(kind=c_int), value :: i_integrationMask
+      integer(kind=c_int), value :: i_integrationMask
     end subroutine
 
     subroutine c_interoperability_initializeIO( i_mu, i_slipRate1, i_slipRate2, i_slip, i_slip1, i_slip2, i_state, i_strength, &
