@@ -209,7 +209,7 @@ CONTAINS
                                                      i_checkPointBackend = trim(io%checkpoint%backend) // c_null_char )
     endif
 
-#ifdef INTEGRATE_VARIABLES'
+#ifdef INTEGRATE_VARIABLES
 	do i = 1,9
 		if ( io%IntegrationMask(i) ) then
 			IntegrationMask(i) = 1
