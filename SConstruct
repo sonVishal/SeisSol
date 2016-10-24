@@ -154,9 +154,9 @@ vars.AddVariables(
 
   BoolVariable( 'commThread', 'use communication thread for MPI progression (option has no effect when not compiling hybrid target)', False ),
 
-  BoolVariable( 'plasticity', 'enable plasticity (generated kernels only)', False )
+  BoolVariable( 'plasticity', 'enable plasticity (generated kernels only)', False ),
 
-	BoolVariable( 'integrateVariables', 'integrate the variables (generated kernels only)', False )
+  BoolVariable( 'integrateVariables', 'integrate the variables (generated kernels only)', False )
 )
 
 # external variables
