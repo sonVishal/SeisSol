@@ -40,6 +40,8 @@
 #ifndef WAVE_FIELD_WRITER_EXECUTOR_H
 #define WAVE_FIELD_WRITER_EXECUTOR_H
 
+#include "SeisSol.h"
+
 #include "Parallel/MPI.h"
 
 #include <cassert>
