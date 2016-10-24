@@ -82,7 +82,7 @@ struct seissol::initializers::LTS {
   Variable<PlasticityData>                plasticity;
   Variable<real[3]>                       energy;
   Variable<real[7]>                       pstrain;
-  Variable<real[9]>                       integrals;
+  // Variable<real[9]>                       integrals;
   Bucket                                  buffersDerivatives;
 
   /// \todo Memkind
@@ -103,7 +103,7 @@ struct seissol::initializers::LTS {
     tree.addVar(              plasticity,   plasticityMask,                 1,      seissol::memory::Standard );
     tree.addVar(                  energy,   plasticityMask,     PAGESIZE_HEAP,      seissol::memory::Standard );
     tree.addVar(                 pstrain,   plasticityMask,     PAGESIZE_HEAP,      seissol::memory::Standard );
-    tree.addVar(               integrals, LayerMask(Ghost),     PAGESIZE_HEAP,      seissol::memory::Standard );
+    // tree.addVar(               integrals, LayerMask(Ghost),     PAGESIZE_HEAP,      seissol::memory::Standard );
 
     tree.addBucket(buffersDerivatives,                          PAGESIZE_HEAP,      MEMKIND_TIMEDOFS );
   }
