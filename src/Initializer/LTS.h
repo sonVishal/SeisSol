@@ -103,7 +103,6 @@ struct seissol::initializers::LTS {
     tree.addVar(              plasticity,   plasticityMask,                 1,      seissol::memory::Standard );
     tree.addVar(                  energy,   plasticityMask,     PAGESIZE_HEAP,      seissol::memory::Standard );
     tree.addVar(                 pstrain,   plasticityMask,     PAGESIZE_HEAP,      seissol::memory::Standard );
-    tree.addVar(               integrals, LayerMask(Ghost),     PAGESIZE_HEAP,      seissol::memory::Standard, 9 );
 
     tree.addBucket(buffersDerivatives,                          PAGESIZE_HEAP,      MEMKIND_TIMEDOFS );
   }
