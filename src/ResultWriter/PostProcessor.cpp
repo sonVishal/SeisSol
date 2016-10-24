@@ -10,5 +10,12 @@ void seissol::writer::PostProcessor::integrateQuantities(const double i_timestep
 void seissol::writer::PostProcessor::setIntegrationMask(const int * const i_integrationMask) {
 	for (size_t i = 0; i < 9; i++) {
 		m_integrationMask[i] = (bool)i_integrationMask[i];
+		if (m_integrationMask[i]) {
+			m_numberOfVariables++;
+		}
 	}
+}
+
+int seissol::writer::PostProcessor::getNumberOfVariables() {
+	return m_numberOfVariables;
 }
