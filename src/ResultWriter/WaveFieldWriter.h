@@ -102,6 +102,9 @@ class WaveFieldWriter : private async::Module<WaveFieldWriterExecutor, WaveField
 	/** Pointer to the integrals */
 	const double* m_integrals;
 
+	/** Flag indicated which integrated variables should be written */
+	const bool* m_integralFlags;
+
 	/** Mapping from the cell order to dofs order */
 	unsigned int* m_map;
 
@@ -252,18 +255,23 @@ public:
 		}
 
 		if (m_integrals) {
+			int count = WaveFieldWriterExecutor::NUM_LOWVARIABLES;
 			for (unsigned int i = WaveFieldWriterExecutor::NUM_LOWVARIABLES; i < WaveFieldWriterExecutor::NUM_LOWVARIABLES+9; i++) {
+				if (!m_integralFlags[i-WaveFieldWriterExecutor::NUM_LOWVARIABLES])
+					continue;
+
 				double* managedBuffer = async::Module<WaveFieldWriterExecutor,
-				WaveFieldInitParam, WaveFieldParam>::managedBuffer<double*>(m_variableBufferIds[1]+i);
+				WaveFieldInitParam, WaveFieldParam>::managedBuffer<double*>(m_variableBufferIds[1]+count);
 
 #ifdef _OPENMP
-		#pragma omp parallel for schedule(static)
+				#pragma omp parallel for schedule(static)
 #endif // _OPENMP
-		for (unsigned int j = 0; j < m_numLowCells; j++)
-			managedBuffer[j] = m_integrals[m_map[j]
-					* 9 + i-WaveFieldWriterExecutor::NUM_LOWVARIABLES];
+				for (unsigned int j = 0; j < m_numLowCells; j++)
+					managedBuffer[j] = m_integrals[m_map[j]
+							* 9 + count-WaveFieldWriterExecutor::NUM_LOWVARIABLES];
 
-		sendBuffer(m_variableBufferIds[1]+i, m_numLowCells*sizeof(double));
+				sendBuffer(m_variableBufferIds[1]+count, m_numLowCells*sizeof(double));
+				count++;
 			}
 		}
 

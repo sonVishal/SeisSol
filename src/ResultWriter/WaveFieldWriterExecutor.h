@@ -189,7 +189,18 @@ public:
 			// Pstrain enabled
 
 			// Variables
-			std::vector<const char*> lowVariables(NUM_LOWVARIABLES+9);
+			const char* integratedVarNames[9] = {
+				"int_xx",
+				"int_yy",
+				"int_zz",
+				"int_xy",
+				"int_yz",
+				"int_xz",
+				"int_u",
+				"int_v",
+				"int_w"
+			};
+			std::vector<const char*> lowVariables(NUM_LOWVARIABLES+seissol::SeisSol::main.postProcessor().getNumberOfVariables());
 			lowVariables[0]  = "ep_xx";
 			lowVariables[1]  = "ep_yy";
 			lowVariables[2]  = "ep_zz";
@@ -197,15 +208,14 @@ public:
 			lowVariables[4]  = "ep_yz";
 			lowVariables[5]  = "ep_xz";
 			lowVariables[6]  = "eta";
-			lowVariables[7]  = "int_xx";
-			lowVariables[8]  = "int_yy";
-			lowVariables[9]  = "int_zz";
-			lowVariables[10] = "int_xy";
-			lowVariables[11] = "int_yz";
-			lowVariables[12] = "int_xz";
-			lowVariables[13] = "int_u";
-			lowVariables[14] = "int_v";
-			lowVariables[15] = "int_w";
+
+			int count = 0;
+			for (size_t i = 0; i < 9; i++) {
+				if (seissol::SeisSol::main.postProcessor().getIntegrationMask()[i]) {
+					lowVariables[count+NUM_LOWVARIABLES] = integratedVarNames[i];
+					count++;
+				}
+			}
 
 			m_lowWaveFieldWriter = new xdmfwriter::XdmfWriter<xdmfwriter::TETRAHEDRON>(
 				rank, (std::string(outputPrefix)+"-low").c_str(), lowVariables, param.timestep);
