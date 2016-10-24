@@ -285,6 +285,9 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 
 		// Create data buffers
 		param.bufferIds[LOWVARIABLE0] = addBuffer(0L, pLowMeshRefiner->getNumCells() * sizeof(double));
+		int numLowVars = WaveFieldWriterExecutor::NUM_LOWVARIABLES + seissol::SeisSol::main.postProcessor().getNumberOfVariables();
+		logInfo(rank) << "Total number of extra variables " << numLowVars;
+
 		for (unsigned int i = 1; i < WaveFieldWriterExecutor::NUM_LOWVARIABLES+9; i++)
 			addBuffer(0L, pLowMeshRefiner->getNumCells() * sizeof(double));
 
