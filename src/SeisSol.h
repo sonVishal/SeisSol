@@ -183,8 +183,6 @@ public:
 	 }
 
 	/**
-
-	/**
 	 * Set the mesh reader
 	 */
 	void setMeshReader(MeshReader* meshReader)
