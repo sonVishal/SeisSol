@@ -591,7 +591,7 @@ void seissol::time_stepping::TimeCluster::computeNeighboringIntegration( seissol
                                          pstrain[l_cell] );
 #endif
   seissol::SeisSol::main.postProcessor().integrateQuantities( m_timeStepWidth,
-                                      			                  integrals[9*l_cell],
+                                      			                  &integrals[9*l_cell],
                                       			                  dofs[l_cell] );
   }
 }
