@@ -82,7 +82,7 @@ struct seissol::initializers::LTS {
   Variable<PlasticityData>                plasticity;
   Variable<real[3]>                       energy;
   Variable<real[7]>                       pstrain;
-  Variable<real>                          integrals;
+  Variable<real*>                          integrals;
   Bucket                                  buffersDerivatives;
 
   /// \todo Memkind
