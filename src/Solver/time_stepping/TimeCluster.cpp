@@ -489,7 +489,7 @@ void seissol::time_stepping::TimeCluster::computeNeighboringIntegration( seissol
   real                      (*energy)[3]                    = i_layerData.var(m_lts->energy);
   real                      (*pstrain)[7]                   = i_layerData.var(m_lts->pstrain);
 #endif
-  real                      (*pstrain)[9]                   = i_layerData.var(m_lts->integrals);
+  real                      (*integrals)[9]                   = i_layerData.var(m_lts->integrals);
 
   real *l_timeIntegrated[4];
 #ifdef ENABLE_MATRIX_PREFETCH
