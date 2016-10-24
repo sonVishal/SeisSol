@@ -785,8 +785,6 @@ void seissol::initializers::MemoryManager::fixateLtsTree( struct TimeStepping&  
   m_meshStructure = i_meshStructure;
 
   // Setup tree variables
-  Variable<real[9]> integrals;
-  m_ltsTree.addVar( integrals, LayerMask(Ghost), PAGESIZE_HEAP, seissol::memory::Standard );
   m_lts.addTo(m_ltsTree);
   m_ltsTree.setNumberOfTimeClusters(i_timeStepping.numberOfLocalClusters);
 

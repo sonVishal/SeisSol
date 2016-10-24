@@ -7,17 +7,17 @@
  * @section LICENSE
  * Copyright (c) 2016, SeisSol Group
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the copyright holder nor the names of its
  *    contributors may be used to endorse or promote products derived from this
  *    software without specific prior written permission.
@@ -37,7 +37,7 @@
  * @section DESCRIPTION
  * Tree for managing lts data.
  **/
- 
+
 #ifndef INITIALIZER_TREE_LTSTREE_HPP_
 #define INITIALIZER_TREE_LTSTREE_HPP_
 
@@ -62,24 +62,24 @@ private:
 
 public:
   LTSTree() : m_vars(NULL), m_buckets(NULL) {}
-  
+
   ~LTSTree() { delete[] m_vars; delete[] m_buckets; }
-  
+
   void setNumberOfTimeClusters(unsigned numberOfTimeCluster) {
     setChildren<TimeCluster>(numberOfTimeCluster);
   }
-  
+
   void fixate() {
     setPostOrderPointers();
     for (LTSTree::leaf_iterator it = beginLeaf(); it != endLeaf(); ++it) {
       it->allocatePointerArrays(varInfo.size(), bucketInfo.size());
     }
   }
-  
+
   inline TimeCluster& child(unsigned index) {
     return *static_cast<TimeCluster*>(m_children[index]);
   }
-  
+
   inline TimeCluster const& child(unsigned index) const {
     return *static_cast<TimeCluster*>(m_children[index]);
   }
@@ -94,11 +94,11 @@ public:
   MemoryInfo const& info(unsigned index) const {
     return varInfo[index];
   }
-  
+
   inline unsigned getNumberOfVariables() const {
     return varInfo.size();
   }
-  
+
   template<typename T>
   void addVar(Variable<T>& handle, LayerMask mask, size_t alignment, seissol::memory::Memkind memkind) {
     handle.index = varInfo.size();
@@ -110,7 +110,19 @@ public:
     m.memkind = memkind;
     varInfo.push_back(m);
   }
-  
+
+  template<typename T>
+  void addVar(Variable<T>& handle, LayerMask mask, size_t alignment, seissol::memory::Memkind memkind, const size_t varSize) {
+    handle.index = varInfo.size();
+    handle.mask = mask;
+    MemoryInfo m;
+    m.bytes = sizeof(T)*varSize;
+    m.alignment = alignment;
+    m.mask = mask;
+    m.memkind = memkind;
+    varInfo.push_back(m);
+  }
+
   void addBucket(Bucket& handle, size_t alignment, seissol::memory::Memkind memkind) {
     handle.index = bucketInfo.size();
     MemoryInfo m;
@@ -118,7 +130,7 @@ public:
     m.memkind = memkind;
     bucketInfo.push_back(m);
   }
-  
+
   void allocateVariables() {
     m_vars = new void*[varInfo.size()];
     std::vector<size_t> variableSizes(varInfo.size(), 0);
@@ -130,33 +142,33 @@ public:
     for (unsigned var = 0; var < varInfo.size(); ++var) {
       m_vars[var] = m_allocator.allocateMemory(variableSizes[var], varInfo[var].alignment, varInfo[var].memkind);
     }
-    
+
     std::fill(variableSizes.begin(), variableSizes.end(), 0);
     for (LTSTree::leaf_iterator it = beginLeaf(); it != endLeaf(); ++it) {
       it->setMemoryRegionsForVariables(varInfo, m_vars, variableSizes);
       it->addVariableSizes(varInfo, variableSizes);
     }
   }
-  
+
   void allocateBuckets() {
     m_buckets = new void*[bucketInfo.size()];
     std::vector<size_t> bucketSizes(bucketInfo.size(), 0);
-    
+
     for (LTSTree::leaf_iterator it = beginLeaf(); it != endLeaf(); ++it) {
       it->addBucketSizes(bucketSizes);
     }
-    
+
     for (unsigned bucket = 0; bucket < bucketInfo.size(); ++bucket) {
       m_buckets[bucket] = m_allocator.allocateMemory(bucketSizes[bucket], bucketInfo[bucket].alignment, bucketInfo[bucket].memkind);
     }
-    
+
     std::fill(bucketSizes.begin(), bucketSizes.end(), 0);
       for (LTSTree::leaf_iterator it = beginLeaf(); it != endLeaf(); ++it) {
       it->setMemoryRegionsForBuckets(m_buckets, bucketSizes);
       it->addBucketSizes(bucketSizes);
     }
   }
-  
+
   void touchVariables() {
     for (LTSTree::leaf_iterator it = beginLeaf(); it != endLeaf(); ++it) {
       it->touchVariables(varInfo);
