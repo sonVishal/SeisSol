@@ -155,6 +155,8 @@ vars.AddVariables(
   BoolVariable( 'commThread', 'use communication thread for MPI progression (option has no effect when not compiling hybrid target)', False ),
 
   BoolVariable( 'plasticity', 'enable plasticity (generated kernels only)', False )
+
+	BoolVariable( 'integrateVariables', 'integrate the variables (generated kernels only)', False )
 )
 
 # external variables
@@ -443,6 +445,9 @@ if env['parallelization'] in ['omp', 'hybrid']:
 
 if( env['plasticity'] ):
   env.Append(CPPDEFINES=['USE_PLASTICITY'])
+
+if( env['integrateVariables'] ):
+  env.Append(CPPDEFINES=['INTEGRATE_VARIABLES'])
 
 # set pre compiler flags for matrix optimizations
 if env['generatedKernels']:

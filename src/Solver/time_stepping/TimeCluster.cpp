@@ -34,21 +34,21 @@
  *
  * @author Alex Breuer (breuer AT mytum.de, http://www5.in.tum.de/wiki/index.php/Dipl.-Math._Alexander_Breuer)
  * @author Sebastian Rettenberger (sebastian.rettenberger AT tum.de, http://www5.in.tum.de/wiki/index.php/Sebastian_Rettenberger)
- * 
+ *
  * @section LICENSE
  * Copyright (c) 2013-2016, SeisSol Group
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the copyright holder nor the names of its
  *    contributors may be used to endorse or promote products derived from this
  *    software without specific prior written permission.
@@ -75,6 +75,7 @@
 #include <omp.h>
 #endif
 
+#include "SeisSol.h"
 #include "TimeCluster.h"
 #include <Solver/Interoperability.h>
 #include <SourceTerm/PointSource.h>
@@ -159,11 +160,11 @@ seissol::time_stepping::TimeCluster::TimeCluster( unsigned int                  
 
   // disable dynamic rupture by default
   m_dynamicRuptureFaces = false;
-  
+
   computeFlops();
 }
 
-seissol::time_stepping::TimeCluster::~TimeCluster() {  
+seissol::time_stepping::TimeCluster::~TimeCluster() {
 #ifndef NDEBUG
   logInfo() << "#(time steps):" << m_numberOfTimeSteps;
 #endif
@@ -212,7 +213,7 @@ void seissol::time_stepping::TimeCluster::enableDynamicRupture() {
 
 void seissol::time_stepping::TimeCluster::computeSources() {
   SCOREP_USER_REGION( "computeSources", SCOREP_USER_REGION_TYPE_FUNCTION )
-  
+
   // Return when point sources not initialised. This might happen if there
   // are no point sources on this rank.
   if (m_numberOfCellToPointSourcesMappings != 0) {
@@ -397,7 +398,7 @@ void seissol::time_stepping::TimeCluster::computeLocalIntegration( seissol::init
 
   // pointer for the call of the ADER-function
   real *l_bufferPointer;
-  
+
   real                (*dofs)[NUMBER_OF_ALIGNED_DOFS] = i_layerData.var(m_lts->dofs);
   real**                buffers                       = i_layerData.var(m_lts->buffers);
   real**                derivatives                   = i_layerData.var(m_lts->derivatives);
@@ -478,7 +479,7 @@ void seissol::time_stepping::TimeCluster::computeLocalIntegration( seissol::init
 
 void seissol::time_stepping::TimeCluster::computeNeighboringIntegration( seissol::initializers::Layer&  i_layerData ) {
   SCOREP_USER_REGION( "computeNeighboringIntegration", SCOREP_USER_REGION_TYPE_FUNCTION )
-  
+
   real                      (*dofs)[NUMBER_OF_ALIGNED_DOFS] = i_layerData.var(m_lts->dofs);
   real*                     (*faceNeighbors)[4]             = i_layerData.var(m_lts->faceNeighbors);
   NeighboringIntegrationData* neighboringIntegration        = i_layerData.var(m_lts->neighboringIntegration);
@@ -488,6 +489,7 @@ void seissol::time_stepping::TimeCluster::computeNeighboringIntegration( seissol
   real                      (*energy)[3]                    = i_layerData.var(m_lts->energy);
   real                      (*pstrain)[7]                   = i_layerData.var(m_lts->pstrain);
 #endif
+  real                      (*pstrain)[9]                   = i_layerData.var(m_lts->integrals);
 
   real *l_timeIntegrated[4];
 #ifdef ENABLE_MATRIX_PREFETCH
@@ -588,6 +590,9 @@ void seissol::time_stepping::TimeCluster::computeNeighboringIntegration( seissol
                                          energy[l_cell],
                                          pstrain[l_cell] );
 #endif
+  seissol::SeisSol::main.postProcessor().integrateQuantities( m_timeStepWidth,
+                                      			                  integrals[l_cell],
+                                      			                  dofs[l_cell] );
   }
 }
 
@@ -617,7 +622,7 @@ bool seissol::time_stepping::TimeCluster::computeLocalCopy(){
 
   // integrate copy layer locally
   computeLocalIntegration( m_clusterData->child<Copy>() );
-                           
+
   g_SeisSolNonZeroFlopsLocal += m_flops_nonZero[LocalCopy];
   g_SeisSolHardwareFlopsLocal += m_flops_hardware[LocalCopy];
 
@@ -810,7 +815,7 @@ void seissol::time_stepping::TimeCluster::computeNeighborIntegrationFlops(  unsi
                                               cellHardware );
     nonZeroFlops += cellNonZero;
     hardwareFlops += cellHardware;
-    
+
     /// \todo add lts time integration
     /// \todo add plasticity
   }
@@ -889,4 +894,3 @@ void seissol::time_stepping::TimeCluster::startSendCopyLayer() {
   sendCopyLayer();
 }
 #endif
-
