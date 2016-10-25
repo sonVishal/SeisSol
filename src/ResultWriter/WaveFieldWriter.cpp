@@ -342,6 +342,7 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 	m_dofs = dofs;
 	m_pstrain = pstrain;
 	m_integrals = integrals;
+	m_numIntegratedVars = seissol::SeisSol::main.postProcessor().getNumberOfVariables();
 	if (!m_extractRegion) {
 		m_map = map;
 	}

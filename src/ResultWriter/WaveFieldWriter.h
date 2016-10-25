@@ -102,6 +102,9 @@ class WaveFieldWriter : private async::Module<WaveFieldWriterExecutor, WaveField
 	/** Pointer to the integrals */
 	const double* m_integrals;
 
+	/** Number of variables to be integrated */
+	const int m_numIntegratedVars;
+
 	/** Mapping from the cell order to dofs order */
 	unsigned int* m_map;
 
@@ -138,7 +141,8 @@ public:
 		  m_map(0L),
 		  m_lastTimeStep(-1),
 		  m_timeTolerance(0),
-		  m_timestep(0)
+		  m_timestep(0),
+		  m_numIntegratedVars(0)
 	{
 	}
 
@@ -252,7 +256,7 @@ public:
 		}
 
 		if (m_integrals) {
-			for (unsigned int i = WaveFieldWriterExecutor::NUM_LOWVARIABLES; i < WaveFieldWriterExecutor::NUM_LOWVARIABLES+seissol::SeisSol::main.postProcessor().getNumberOfVariables(); i++) {
+			for (unsigned int i = WaveFieldWriterExecutor::NUM_LOWVARIABLES; i < WaveFieldWriterExecutor::NUM_LOWVARIABLES+m_numIntegratedVars; i++) {
 				double* managedBuffer = async::Module<WaveFieldWriterExecutor,
 				WaveFieldInitParam, WaveFieldParam>::managedBuffer<double*>(m_variableBufferIds[1]+i);
 
