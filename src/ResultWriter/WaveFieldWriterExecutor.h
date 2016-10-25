@@ -189,23 +189,31 @@ public:
 			// Pstrain enabled
 
 			// Variables
-			std::vector<const char*> lowVariables(NUM_LOWVARIABLES+NUM_INTEGRATED_VARIABLES);
-			lowVariables[0]  = "ep_xx";
-			lowVariables[1]  = "ep_yy";
-			lowVariables[2]  = "ep_zz";
-			lowVariables[3]  = "ep_xy";
-			lowVariables[4]  = "ep_yz";
-			lowVariables[5]  = "ep_xz";
-			lowVariables[6]  = "eta";
-			lowVariables[7]  = "int_xx";
-			lowVariables[8]  = "int_yy";
-			lowVariables[9]  = "int_zz";
-			lowVariables[10] = "int_xy";
-			lowVariables[11] = "int_yz";
-			lowVariables[12] = "int_xz";
-			lowVariables[13] = "int_u";
-			lowVariables[14] = "int_v";
-			lowVariables[15] = "int_w";
+			std::vector<const char*> lowVariables;
+			lowVariables.push_back("ep_xx");
+			lowVariables.push_back("ep_yy");
+			lowVariables.push_back("ep_zz");
+			lowVariables.push_back("ep_xy");
+			lowVariables.push_back("ep_yz");
+			lowVariables.push_back("ep_xz");
+			lowVariables.push_back("eta");
+			const char* integratedVarNames[NUM_INTEGRATED_VARIABLES] = {
+				"int_xx",
+				"int_yy",
+				"int_zz",
+				"int_xy",
+				"int_yz",
+				"int_xz",
+				"int_u",
+				"int_v",
+				"int_w"
+			};
+
+			for (size_t i = 0; i < NUM_INTEGRATED_VARIABLES; i++) {
+				if (m_outputFlags[i+m_numVariables]) {
+					lowVariables.push_back(integratedVarNames[i]);
+				}
+			}
 
 			m_lowWaveFieldWriter = new xdmfwriter::XdmfWriter<xdmfwriter::TETRAHEDRON>(
 				rank, (std::string(outputPrefix)+"-low").c_str(), lowVariables, param.timestep);
@@ -260,9 +268,18 @@ public:
 		if (m_lowWaveFieldWriter) {
 			m_lowWaveFieldWriter->addTimeStep(param.time);
 
-			for (unsigned int i = 0; i < NUM_LOWVARIABLES+9; i++) {
+			for (unsigned int i = 0; i < NUM_LOWVARIABLES; i++) {
 				m_lowWaveFieldWriter->writeData(i,
 					static_cast<const double*>(info.buffer(m_variableBufferIds[1]+i)));
+			}
+			nextId = 0;
+			for (unsigned int i = m_numVariables; i < NUM_LOWVARIABLES+m_numVariables; i++) {
+				if (m_outputFlags[i]) {
+					m_lowWaveFieldWriter->writeData(i,
+						static_cast<const double*>(info.buffer(m_variableBufferIds[1]+nextId)));
+
+					nextId++;
+				}
 			}
 
 			m_lowWaveFieldWriter->flush();
