@@ -78,11 +78,11 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 	m_outputFlags = new bool[numVars+9];
 	for (size_t i = 0; i < numVars; i++)
 		m_outputFlags[i] = (outputMask[i] != 0);
-	for (size_t i = numVars; i < numVars+9; i++)
+	for (size_t i = numVars; i < numVars+WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES; i++)
 		m_outputFlags[i] = seissol::SeisSol::main.postProcessor().getIntegrationMask()[i-numVars];
 	// WARNING: The m_outputFlags memory might be directly used by the executor.
 	// Do not modify this array after the following line
-	param.bufferIds[OUTPUT_FLAGS] = addSyncBuffer(m_outputFlags, numVars*sizeof(bool), true);
+	param.bufferIds[OUTPUT_FLAGS] = addSyncBuffer(m_outputFlags, (WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES+numVars)*sizeof(bool), true);
 
 	// Setup the tetrahedron refinement strategy
 	refinement::TetrahedronRefiner<double>* tetRefiner = 0L;
@@ -290,7 +290,7 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 		int numLowVars = WaveFieldWriterExecutor::NUM_LOWVARIABLES + seissol::SeisSol::main.postProcessor().getNumberOfVariables();
 		logInfo(rank) << "Total number of extra variables " << numLowVars;
 
-		for (unsigned int i = 1; i < WaveFieldWriterExecutor::NUM_LOWVARIABLES+9; i++)
+		for (unsigned int i = 1; i < WaveFieldWriterExecutor::NUM_LOWVARIABLES+WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES; i++)
 			addBuffer(0L, pLowMeshRefiner->getNumCells() * sizeof(double));
 
 		// Save number of cells

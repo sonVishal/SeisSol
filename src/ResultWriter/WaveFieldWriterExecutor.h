@@ -131,7 +131,7 @@ public:
 		//
 		// High order I/O
 		//
-		m_numVariables = info.bufferSize(param.bufferIds[OUTPUT_FLAGS]) / sizeof(bool)-9;
+		m_numVariables = info.bufferSize(param.bufferIds[OUTPUT_FLAGS]) / sizeof(bool)-NUM_INTEGRATED_VARIABLES;
 		m_outputFlags = static_cast<const bool*>(info.buffer(param.bufferIds[OUTPUT_FLAGS]));
 
 		assert(m_numVariables <= 9);
@@ -189,7 +189,7 @@ public:
 			// Pstrain enabled
 
 			// Variables
-			std::vector<const char*> lowVariables(NUM_LOWVARIABLES+9);
+			std::vector<const char*> lowVariables(NUM_LOWVARIABLES+NUM_INTEGRATED_VARIABLES);
 			lowVariables[0]  = "ep_xx";
 			lowVariables[1]  = "ep_yy";
 			lowVariables[2]  = "ep_zz";
@@ -289,6 +289,7 @@ public:
 
 public:
 	static const unsigned int NUM_LOWVARIABLES = 7;
+	static const unsigned int NUM_INTEGRATED_VARIABLES = 9;
 };
 
 }
