@@ -79,7 +79,7 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 	for (size_t i = 0; i < numVars; i++)
 		m_outputFlags[i] = (outputMask[i] != 0);
 	for (size_t i = numVars; i < numVars+9; i++)
-		m_outputFlags[i] = (seissol::SeisSol.main.postProcessor().getIntegrationMask()[i-numVars] != 0);
+		m_outputFlags[i] = seissol::SeisSol::main.postProcessor().getIntegrationMask()[i-numVars];
 	// WARNING: The m_outputFlags memory might be directly used by the executor.
 	// Do not modify this array after the following line
 	param.bufferIds[OUTPUT_FLAGS] = addSyncBuffer(m_outputFlags, numVars*sizeof(bool), true);
