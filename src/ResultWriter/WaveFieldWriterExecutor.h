@@ -276,7 +276,7 @@ public:
 			unsigned int flagId = m_numVariables;
 			for (unsigned int i = NUM_LOWVARIABLES; i < NUM_LOWVARIABLES+NUM_INTEGRATED_VARIABLES; i++) {
 				if (m_outputFlags[flagId]) {
-					m_lowWaveFieldWriter->writeData(i,
+					m_lowWaveFieldWriter->writeData(nextId,
 						static_cast<const double*>(info.buffer(m_variableBufferIds[1]+nextId)));
 
 					nextId++;
