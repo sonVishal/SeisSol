@@ -103,7 +103,7 @@ class WaveFieldWriter : private async::Module<WaveFieldWriterExecutor, WaveField
 	const double* m_integrals;
 
 	/** Number of variables to be integrated */
-	const int m_numIntegratedVars;
+	int m_numIntegratedVars;
 
 	/** Mapping from the cell order to dofs order */
 	unsigned int* m_map;
