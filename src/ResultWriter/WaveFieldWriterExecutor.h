@@ -273,13 +273,15 @@ public:
 					static_cast<const double*>(info.buffer(m_variableBufferIds[1]+i)));
 			}
 			nextId = 0;
-			for (unsigned int i = m_numVariables; i < NUM_LOWVARIABLES+m_numVariables; i++) {
-				if (m_outputFlags[i]) {
+			unsigned int flagId = m_numVariables;
+			for (unsigned int i = NUM_LOWVARIABLES; i < NUM_LOWVARIABLES+NUM_INTEGRATED_VARIABLES; i++) {
+				if (m_outputFlags[flagId]) {
 					m_lowWaveFieldWriter->writeData(i,
 						static_cast<const double*>(info.buffer(m_variableBufferIds[1]+nextId)));
 
 					nextId++;
 				}
+				flagId++;
 			}
 
 			m_lowWaveFieldWriter->flush();
