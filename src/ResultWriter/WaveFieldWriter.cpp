@@ -81,7 +81,7 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 		m_outputFlags[i] = (outputMask[i] != 0);
 	// WARNING: The m_outputFlags memory might be directly used by the executor.
 	// Do not modify this array after the following line
-	param.bufferIds[OUTPUT_FLAGS] = addSyncBuffer(m_outputFlags, (WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES+numVars)*sizeof(bool), true);
+	param.bufferIds[OUTPUT_FLAGS] = addSyncBuffer(m_outputFlags, numVars*sizeof(bool), true);
 
 	// Setup the tetrahedron refinement strategy
 	refinement::TetrahedronRefiner<double>* tetRefiner = 0L;
