@@ -131,7 +131,7 @@ public:
 		//
 		// High order I/O
 		//
-		m_numVariables = info.bufferSize(param.bufferIds[OUTPUT_FLAGS]) / sizeof(bool);
+		m_numVariables = info.bufferSize(param.bufferIds[OUTPUT_FLAGS]) / sizeof(bool) - NUM_INTEGRATED_VARIABLES;
 		m_outputFlags = static_cast<const bool*>(info.buffer(param.bufferIds[OUTPUT_FLAGS]));
 
 		assert(m_numVariables <= 9);

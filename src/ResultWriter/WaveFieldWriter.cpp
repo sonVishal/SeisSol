@@ -71,17 +71,23 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 	/** List of all buffer ids */
 	param.bufferIds[OUTPUT_PREFIX] = addSyncBuffer(m_outputPrefix.c_str(), m_outputPrefix.size()+1, true);
 
+	// For low order
+	m_integratedFlags = seissol::SeisSol::main.postProcessor().getIntegrationMask();
+
 	//
 	// High order I/O
 	//
 	m_numVariables = numVars;
 	// TODO: We might need to transfer the integrationFlag to the executor along this or in a similar way
-	m_outputFlags = new bool[numVars];
+	m_outputFlags = new bool[numVars+WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES];
 	for (size_t i = 0; i < numVars; i++)
 		m_outputFlags[i] = (outputMask[i] != 0);
+	for (size_t i = numVars; i < WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES; i++) {
+		m_outputFlags[i] = m_integratedFlags[i-numVars];
+	}
 	// WARNING: The m_outputFlags memory might be directly used by the executor.
 	// Do not modify this array after the following line
-	param.bufferIds[OUTPUT_FLAGS] = addSyncBuffer(m_outputFlags, numVars*sizeof(bool), true);
+	param.bufferIds[OUTPUT_FLAGS] = addSyncBuffer(m_outputFlags, (numVars+WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES)*sizeof(bool), true);
 
 	// Setup the tetrahedron refinement strategy
 	refinement::TetrahedronRefiner<double>* tetRefiner = 0L;
@@ -350,7 +356,6 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 	m_dofs = dofs;
 	m_pstrain = pstrain;
 	m_integrals = integrals;
-	m_integratedFlags = seissol::SeisSol::main.postProcessor().getIntegrationMask();
 	if (!m_extractRegion) {
 		m_map = map;
 	}
