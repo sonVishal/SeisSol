@@ -144,7 +144,8 @@ public:
 		  m_map(0L),
 		  m_lastTimeStep(-1),
 		  m_timeTolerance(0),
-		  m_timestep(0)
+		  m_timestep(0),
+		  m_integratedFlags(0L), m_numIntegratedVariables(0)
 	{
 	}
 
@@ -262,7 +263,7 @@ public:
 			if (m_pstrain)
 				offset = WaveFieldWriterExecutor::NUM_LOWVARIABLES;
 
-			for (unsigned int i = offset; i < offset+6; i++) {
+			for (unsigned int i = offset; i < offset+9; i++) {
 				double* managedBuffer = async::Module<WaveFieldWriterExecutor,
 				WaveFieldInitParam, WaveFieldParam>::managedBuffer<double*>(m_variableBufferIds[1]+i);
 
@@ -310,6 +311,7 @@ public:
 			delete [] m_map;
 			m_map = 0L;
 		}
+		m_integratedFlags = 0L;
 	}
 
 	void tearDown()
