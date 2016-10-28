@@ -71,13 +71,11 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 	/** List of all buffer ids */
 	param.bufferIds[OUTPUT_PREFIX] = addSyncBuffer(m_outputPrefix.c_str(), m_outputPrefix.size()+1, true);
 
-	// For low order
-	m_integratedFlags = seissol::SeisSol::main.postProcessor().getIntegrationMask();
-
 	//
 	// High order I/O
 	//
 	m_numVariables = numVars;
+	// TODO: We might need to transfer the integrationFlag to the executor along this or in a similar way
 	m_outputFlags = new bool[numVars];
 	for (size_t i = 0; i < numVars; i++)
 		m_outputFlags[i] = (outputMask[i] != 0);
@@ -298,6 +296,7 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 		} else {
 			numLowVars = WaveFieldWriterExecutor::NUM_LOWVARIABLES + m_numIntegratedVariables;
 		}
+		logInfo(rank) << "Total number of extra variables " << numLowVars;
 
 		for (unsigned int i = 1; i < numLowVars; i++)
 			addBuffer(0L, pLowMeshRefiner->getNumCells() * sizeof(double));
@@ -351,6 +350,7 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 	m_dofs = dofs;
 	m_pstrain = pstrain;
 	m_integrals = integrals;
+	m_integratedFlags = seissol::SeisSol::main.postProcessor().getIntegrationMask();
 	if (!m_extractRegion) {
 		m_map = map;
 	}

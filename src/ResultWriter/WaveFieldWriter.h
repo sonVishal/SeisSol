@@ -144,8 +144,7 @@ public:
 		  m_map(0L),
 		  m_lastTimeStep(-1),
 		  m_timeTolerance(0),
-		  m_timestep(0),
-		  m_integratedFlags(0L), m_numIntegratedVariables(0)
+		  m_timestep(0)
 	{
 	}
 
@@ -263,18 +262,22 @@ public:
 			if (m_pstrain)
 				offset = WaveFieldWriterExecutor::NUM_LOWVARIABLES;
 
-			for (unsigned int i = offset; i < offset+9; i++) {
+			nextId = offset;
+			for (unsigned int i = offset; i < offset+WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES; i++) {
+				if (!m_integratedFlags[i-offset])
+					continue;
 				double* managedBuffer = async::Module<WaveFieldWriterExecutor,
-				WaveFieldInitParam, WaveFieldParam>::managedBuffer<double*>(m_variableBufferIds[1]+i);
+				WaveFieldInitParam, WaveFieldParam>::managedBuffer<double*>(m_variableBufferIds[1]+nextId);
 
 #ifdef _OPENMP
 				#pragma omp parallel for schedule(static)
 #endif // _OPENMP
 				for (unsigned int j = 0; j < m_numLowCells; j++)
 					managedBuffer[j] = m_integrals[m_map[j]
-							* 9 + i-offset];
+							* 9 + nextId-offset];
 
-				sendBuffer(m_variableBufferIds[1]+i, m_numLowCells*sizeof(double));
+				sendBuffer(m_variableBufferIds[1]+nextId, m_numLowCells*sizeof(double));
+				nextId++;
 			}
 		}
 
@@ -311,7 +314,6 @@ public:
 			delete [] m_map;
 			m_map = 0L;
 		}
-		m_integratedFlags = 0L;
 	}
 
 	void tearDown()
