@@ -192,7 +192,7 @@ public:
 			// TODO: We also need the flags for the integrated variables
 			// TODO: Based on this we need to assign the lowVariables
 			// Variables
-			std::vector<const char*> lowVariables(NUM_LOWVARIABLES+9);
+			std::vector<const char*> lowVariables(NUM_LOWVARIABLES+6);
 			lowVariables[0]  = "ep_xx";
 			lowVariables[1]  = "ep_yy";
 			lowVariables[2]  = "ep_zz";
@@ -206,9 +206,6 @@ public:
 			lowVariables[10] = "int_xy";
 			lowVariables[11] = "int_yz";
 			lowVariables[12] = "int_xz";
-			lowVariables[13] = "int_u";
-			lowVariables[14] = "int_v";
-			lowVariables[15] = "int_w";
 
 			m_lowWaveFieldWriter = new xdmfwriter::XdmfWriter<xdmfwriter::TETRAHEDRON>(
 				rank, (std::string(outputPrefix)+"-low").c_str(), lowVariables, param.timestep);
@@ -264,7 +261,7 @@ public:
 		if (m_lowWaveFieldWriter) {
 			m_lowWaveFieldWriter->addTimeStep(param.time);
 
-			for (unsigned int i = 0; i < NUM_LOWVARIABLES+9; i++) {
+			for (unsigned int i = 0; i < NUM_LOWVARIABLES+6; i++) {
 				m_lowWaveFieldWriter->writeData(i,
 					static_cast<const double*>(info.buffer(m_variableBufferIds[1]+i)));
 			}

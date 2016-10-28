@@ -78,7 +78,6 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 	// High order I/O
 	//
 	m_numVariables = numVars;
-	// TODO: We might need to transfer the integrationFlag to the executor along this or in a similar way
 	m_outputFlags = new bool[numVars+WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES];
 	for (size_t i = 0; i < numVars; i++)
 		m_outputFlags[i] = (outputMask[i] != 0);
