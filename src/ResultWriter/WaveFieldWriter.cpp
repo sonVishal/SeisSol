@@ -82,7 +82,7 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 	m_outputFlags = new bool[numVars+WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES];
 	for (size_t i = 0; i < numVars; i++)
 		m_outputFlags[i] = (outputMask[i] != 0);
-	for (size_t i = numVars; i < WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES; i++) {
+	for (size_t i = numVars; i < WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES+numVars; i++) {
 		m_outputFlags[i] = m_integratedFlags[i-numVars];
 	}
 	// WARNING: The m_outputFlags memory might be directly used by the executor.
