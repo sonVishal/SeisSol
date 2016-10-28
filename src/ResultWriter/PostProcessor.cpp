@@ -23,3 +23,7 @@ void seissol::writer::PostProcessor::setIntegrationMask(const int * const i_inte
 int seissol::writer::PostProcessor::getNumberOfVariables() {
 	return m_numberOfVariables;
 }
+
+bool* seissol::writer::PostProcessor::getIntegrationMask() {
+	return m_integrationMask;
+}

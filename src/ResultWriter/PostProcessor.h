@@ -24,6 +24,7 @@ public:
     void integrateQuantities(const double i_timestep, double* io_integrals, double* i_dofs);
     void setIntegrationMask(const int * const i_integrationMask);
     int getNumberOfVariables();
+    bool* getIntegrationMask();
 };
 
 }
