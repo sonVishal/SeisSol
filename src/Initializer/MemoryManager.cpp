@@ -789,7 +789,6 @@ void seissol::initializers::MemoryManager::fixateLtsTree( struct TimeStepping&  
   m_lts.addTo(m_ltsTree);
   m_ltsTree.addVar( m_lts.integrals, LayerMask(Ghost), PAGESIZE_HEAP,
     seissol::memory::Standard, seissol::SeisSol::main.postProcessor().getNumberOfVariables() );
-  std::cout << "Assigned " << seissol::SeisSol::main.postProcessor().getNumberOfVariables() << " variables" << std::endl;
   m_ltsTree.setNumberOfTimeClusters(i_timeStepping.numberOfLocalClusters);
 
   /// From this point, the tree layout, variables, and buckets cannot be changed anymore

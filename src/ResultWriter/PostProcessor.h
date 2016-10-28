@@ -1,8 +1,6 @@
 #ifndef POST_PROCESSOR_H
 #define POST_PROCESSOR_H
 
-#include <vector>
-
 namespace seissol
 {
 
@@ -15,7 +13,7 @@ private:
     int m_numberOfVariables;
 public:
     PostProcessor (): m_numberOfVariables(0) {
-        for (size_t i = 0; i < 9; i++) {
+        for (unsigned int i = 0; i < 9; i++) {
             m_integrationMask[i] = false;
         }
     }
