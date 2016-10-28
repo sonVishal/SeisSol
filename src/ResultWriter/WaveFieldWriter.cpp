@@ -240,6 +240,9 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 	// Save number of cells
 	m_numCells = meshRefiner->getNumCells();
 
+	// Get the number of variables to be integrated
+	m_numIntegratedVars = seissol::SeisSol::main.postProcessor().getNumberOfVariables();
+
 	//
 	//  Low order I/O
 	//
@@ -292,10 +295,9 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 		if (pstrain && !integrals) {
 			numLowVars = WaveFieldWriterExecutor::NUM_LOWVARIABLES;
 		} else if (!pstrain && integrals) {
-			numLowVars = seissol::SeisSol::main.postProcessor().getNumberOfVariables();
+			numLowVars = m_numIntegratedVars;
 		} else {
-			numLowVars = WaveFieldWriterExecutor::NUM_LOWVARIABLES
-				+ seissol::SeisSol::main.postProcessor().getNumberOfVariables();
+			numLowVars = WaveFieldWriterExecutor::NUM_LOWVARIABLES + m_numIntegratedVars;
 		}
 		for (unsigned int i = 1; i < numLowVars; i++)
 			addBuffer(0L, pLowMeshRefiner->getNumCells() * sizeof(double));
@@ -349,7 +351,7 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 	m_dofs = dofs;
 	m_pstrain = pstrain;
 	m_integrals = integrals;
-	m_numIntegratedVars = seissol::SeisSol::main.postProcessor().getNumberOfVariables();
+	m_integratedFlags = seissol::SeisSol::main.postProcessor().getIntegrationMask();
 	if (!m_extractRegion) {
 		m_map = map;
 	}

@@ -87,6 +87,9 @@ class WaveFieldWriter : private async::Module<WaveFieldWriterExecutor, WaveField
 	/** Flag indicated which variables should be written */
 	bool* m_outputFlags;
 
+	/** Flag indicated which integrated variables should be written */
+	bool* m_integratedFlags;
+
 	/** Refined number of cells */
 	unsigned int m_numCells;
 
