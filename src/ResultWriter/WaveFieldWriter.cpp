@@ -286,12 +286,17 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 
 		// Create data buffers
 		param.bufferIds[LOWVARIABLE0] = addBuffer(0L, pLowMeshRefiner->getNumCells() * sizeof(double));
-		// TODO: numLowVars should be based on pstrain as well as integrals so this would be split
-		int numLowVars = WaveFieldWriterExecutor::NUM_LOWVARIABLES + seissol::SeisSol::main.postProcessor().getNumberOfVariables();
+		int numLowVars = 0;
+		if (pstrain && !integrals) {
+			numLowVars = WaveFieldWriterExecutor::NUM_LOWVARIABLES;
+		} else if (integrals && !pstrain) {
+			numLowVars = seissol::SeisSol::main.postProcessor().getNumberOfVariables();
+		} else {
+			numLowVars = WaveFieldWriterExecutor::NUM_LOWVARIABLES + seissol::SeisSol::main.postProcessor().getNumberOfVariables();
+		}
 		logInfo(rank) << "Total number of extra variables " << numLowVars;
 
-		// TODO: The loop bound needs to be adjusted to numLowVars
-		for (unsigned int i = 1; i < WaveFieldWriterExecutor::NUM_LOWVARIABLES+9; i++)
+		for (unsigned int i = 1; i < numLowVars; i++)
 			addBuffer(0L, pLowMeshRefiner->getNumCells() * sizeof(double));
 
 		// Save number of cells
