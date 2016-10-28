@@ -75,6 +75,7 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 	// High order I/O
 	//
 	m_numVariables = numVars;
+	// TODO: We might need to transfer the integrationFlag to the executor along this or in a similar way
 	m_outputFlags = new bool[numVars];
 	for (size_t i = 0; i < numVars; i++)
 		m_outputFlags[i] = (outputMask[i] != 0);
@@ -285,9 +286,11 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 
 		// Create data buffers
 		param.bufferIds[LOWVARIABLE0] = addBuffer(0L, pLowMeshRefiner->getNumCells() * sizeof(double));
+		// TODO: numLowVars should be based on pstrain as well as integrals so this would be split
 		int numLowVars = WaveFieldWriterExecutor::NUM_LOWVARIABLES + seissol::SeisSol::main.postProcessor().getNumberOfVariables();
 		logInfo(rank) << "Total number of extra variables " << numLowVars;
 
+		// TODO: The loop bound needs to be adjusted to numLowVars
 		for (unsigned int i = 1; i < WaveFieldWriterExecutor::NUM_LOWVARIABLES+9; i++)
 			addBuffer(0L, pLowMeshRefiner->getNumCells() * sizeof(double));
 
@@ -322,7 +325,7 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 	removeBuffer(param.bufferIds[OUTPUT_PREFIX]);
 	removeBuffer(param.bufferIds[CELLS]);
 	removeBuffer(param.bufferIds[VERTICES]);
-	if (pstrain) {
+	if (pstrain || integrals) {
 		removeBuffer(param.bufferIds[LOWCELLS]);
 		removeBuffer(param.bufferIds[LOWVERTICES]);
 	}

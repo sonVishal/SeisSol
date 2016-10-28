@@ -252,13 +252,15 @@ public:
 		}
 
 		if (m_integrals) {
+			// TODO: if pstrain then only there is an offset otherwise we start from 0
+			// TODO: We need to take special care of the indices as not all integrals will be stored in the first place
 			for (unsigned int i = WaveFieldWriterExecutor::NUM_LOWVARIABLES; i < WaveFieldWriterExecutor::NUM_LOWVARIABLES+9; i++) {
 				double* managedBuffer = async::Module<WaveFieldWriterExecutor,
 				WaveFieldInitParam, WaveFieldParam>::managedBuffer<double*>(m_variableBufferIds[1]+i);
 
 #ifdef _OPENMP
 		#pragma omp parallel for schedule(static)
-#endif // _OPENMP
+#endif // _OPENMP // TODO: Indexing stuff applies here as well
 		for (unsigned int j = 0; j < m_numLowCells; j++)
 			managedBuffer[j] = m_integrals[m_map[j]
 					* 9 + i-WaveFieldWriterExecutor::NUM_LOWVARIABLES];

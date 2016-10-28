@@ -188,6 +188,9 @@ public:
 		if (param.bufferIds[LOWCELLS] >= 0) {
 			// Pstrain enabled
 
+			// TODO: Need a way to distinguish between pstrain and integrals
+			// TODO: We also need the flags for the integrated variables
+			// TODO: Based on this we need to assign the lowVariables
 			// Variables
 			std::vector<const char*> lowVariables(NUM_LOWVARIABLES+9);
 			lowVariables[0]  = "ep_xx";
@@ -256,6 +259,7 @@ public:
 
 		m_waveFieldWriter->flush();
 
+		// TODO: The low output needs a flag for the integrated variables
 		// Low order output
 		if (m_lowWaveFieldWriter) {
 			m_lowWaveFieldWriter->addTimeStep(param.time);
