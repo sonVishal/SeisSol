@@ -259,14 +259,13 @@ public:
 		}
 
 		if (m_integrals) {
-			bool* outputMask = seissol::SeisSol::main.postProcessor().getIntegrationMask();
 			unsigned int offset = 0;
 			if (m_pstrain) {
 				offset = WaveFieldWriterExecutor::NUM_LOWVARIABLES;
 			}
 			unsigned int nextId = offset;
 			for (unsigned int i = offset; i < WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES+offset; i++) {
-				if (!outputMask[i-offset])
+				if (!m_integratedFlags[i-offset])
 					continue;
 
 				double* managedBuffer = async::Module<WaveFieldWriterExecutor,
