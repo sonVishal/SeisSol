@@ -262,22 +262,18 @@ public:
 			if (m_pstrain)
 				offset = WaveFieldWriterExecutor::NUM_LOWVARIABLES;
 
-			nextId = offset;
-			for (unsigned int i = offset; i < offset+WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES; i++) {
-				if (!m_integratedFlags[i-offset])
-					continue;
+			for (unsigned int i = offset; i < offset+6; i++) {
 				double* managedBuffer = async::Module<WaveFieldWriterExecutor,
-				WaveFieldInitParam, WaveFieldParam>::managedBuffer<double*>(m_variableBufferIds[1]+nextId);
+				WaveFieldInitParam, WaveFieldParam>::managedBuffer<double*>(m_variableBufferIds[1]+i);
 
 #ifdef _OPENMP
 				#pragma omp parallel for schedule(static)
 #endif // _OPENMP
 				for (unsigned int j = 0; j < m_numLowCells; j++)
 					managedBuffer[j] = m_integrals[m_map[j]
-							* 9 + nextId-offset];
+							* 9 + i-offset];
 
-				sendBuffer(m_variableBufferIds[1]+nextId, m_numLowCells*sizeof(double));
-				nextId++;
+				sendBuffer(m_variableBufferIds[1]+i, m_numLowCells*sizeof(double));
 			}
 		}
 
