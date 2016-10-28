@@ -131,7 +131,7 @@ public:
 		//
 		// High order I/O
 		//
-		m_numVariables = info.bufferSize(param.bufferIds[OUTPUT_FLAGS]) / sizeof(bool)-NUM_INTEGRATED_VARIABLES;
+		m_numVariables = info.bufferSize(param.bufferIds[OUTPUT_FLAGS]) / sizeof(bool);
 		m_outputFlags = static_cast<const bool*>(info.buffer(param.bufferIds[OUTPUT_FLAGS]));
 
 		assert(m_numVariables <= 9);
@@ -197,23 +197,32 @@ public:
 			lowVariables.push_back("ep_yz");
 			lowVariables.push_back("ep_xz");
 			lowVariables.push_back("eta");
-			const char* integratedVarNames[NUM_INTEGRATED_VARIABLES] = {
-				"int_xx",
-				"int_yy",
-				"int_zz",
-				"int_xy",
-				"int_yz",
-				"int_xz",
-				"int_u",
-				"int_v",
-				"int_w"
-			};
+			lowVariables.push_back("int_xx");
+			lowVariables.push_back("int_yy");
+			lowVariables.push_back("int_zz");
+			lowVariables.push_back("int_xy");
+			lowVariables.push_back("int_yz");
+			lowVariables.push_back("int_xz");
+			lowVariables.push_back("int_u");
+			lowVariables.push_back("int_v");
+			lowVariables.push_back("int_w");
+			// const char* integratedVarNames[NUM_INTEGRATED_VARIABLES] = {
+			// 	"int_xx",
+			// 	"int_yy",
+			// 	"int_zz",
+			// 	"int_xy",
+			// 	"int_yz",
+			// 	"int_xz",
+			// 	"int_u",
+			// 	"int_v",
+			// 	"int_w"
+			// };
 
-			for (size_t i = 0; i < NUM_INTEGRATED_VARIABLES; i++) {
-				if (m_outputFlags[i+m_numVariables]) {
-					lowVariables.push_back(integratedVarNames[i]);
-				}
-			}
+			// for (size_t i = 0; i < NUM_INTEGRATED_VARIABLES; i++) {
+			// 	if (m_outputFlags[i+m_numVariables]) {
+			// 		lowVariables.push_back(integratedVarNames[i]);
+			// 	}
+			// }
 
 			m_lowWaveFieldWriter = new xdmfwriter::XdmfWriter<xdmfwriter::TETRAHEDRON>(
 				rank, (std::string(outputPrefix)+"-low").c_str(), lowVariables, param.timestep);
@@ -272,16 +281,16 @@ public:
 				m_lowWaveFieldWriter->writeData(i,
 					static_cast<const double*>(info.buffer(m_variableBufferIds[1]+i)));
 			}
-			nextId = 0;
-			unsigned int flagId = m_numVariables;
+			// nextId = 0;
+			// unsigned int flagId = m_numVariables;
 			for (unsigned int i = NUM_LOWVARIABLES; i < NUM_LOWVARIABLES+NUM_INTEGRATED_VARIABLES; i++) {
-				if (m_outputFlags[flagId]) {
+				// if (m_outputFlags[flagId]) {
 					m_lowWaveFieldWriter->writeData(nextId,
-						static_cast<const double*>(info.buffer(m_variableBufferIds[1]+nextId)));
+						static_cast<const double*>(info.buffer(m_variableBufferIds[1]+i)));
 
-					nextId++;
-				}
-				flagId++;
+					// nextId++;
+				// }
+				// flagId++;
 			}
 
 			m_lowWaveFieldWriter->flush();

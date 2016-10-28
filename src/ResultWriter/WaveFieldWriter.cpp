@@ -75,11 +75,10 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 	// High order I/O
 	//
 	m_numVariables = numVars;
-	m_outputFlags = new bool[numVars+9];
+	m_outputFlags = new bool[numVars];
+	// TODO: We can try to send in the output flags for integrals with this
 	for (size_t i = 0; i < numVars; i++)
 		m_outputFlags[i] = (outputMask[i] != 0);
-	for (size_t i = numVars; i < numVars+WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES; i++)
-		m_outputFlags[i] = seissol::SeisSol::main.postProcessor().getIntegrationMask()[i-numVars];
 	// WARNING: The m_outputFlags memory might be directly used by the executor.
 	// Do not modify this array after the following line
 	param.bufferIds[OUTPUT_FLAGS] = addSyncBuffer(m_outputFlags, (WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES+numVars)*sizeof(bool), true);
@@ -287,10 +286,18 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 
 		// Create data buffers
 		param.bufferIds[LOWVARIABLE0] = addBuffer(0L, pLowMeshRefiner->getNumCells() * sizeof(double));
-		int numLowVars = WaveFieldWriterExecutor::NUM_LOWVARIABLES + seissol::SeisSol::main.postProcessor().getNumberOfVariables();
-		logInfo(rank) << "Total number of extra variables " << numLowVars;
 
-		for (unsigned int i = 1; i < WaveFieldWriterExecutor::NUM_LOWVARIABLES+WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES; i++)
+		unsigned int numLowVars = 0;
+
+		if (pstrain && !integrals) {
+			numLowVars = WaveFieldWriterExecutor::NUM_LOWVARIABLES;
+		} else if (!pstrain && integrals) {
+			numLowVars = seissol::SeisSol::main.postProcessor().getNumberOfVariables();
+		} else {
+			numLowVars = WaveFieldWriterExecutor::NUM_LOWVARIABLES
+				+ seissol::SeisSol::main.postProcessor().getNumberOfVariables();
+		}
+		for (unsigned int i = 1; i < numLowVars; i++)
 			addBuffer(0L, pLowMeshRefiner->getNumCells() * sizeof(double));
 
 		// Save number of cells
@@ -324,7 +331,7 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 	removeBuffer(param.bufferIds[OUTPUT_PREFIX]);
 	removeBuffer(param.bufferIds[CELLS]);
 	removeBuffer(param.bufferIds[VERTICES]);
-	if (pstrain) {
+	if (pstrain || integrals) {
 		removeBuffer(param.bufferIds[LOWCELLS]);
 		removeBuffer(param.bufferIds[LOWVERTICES]);
 	}

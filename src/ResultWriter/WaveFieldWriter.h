@@ -256,18 +256,28 @@ public:
 		}
 
 		if (m_integrals) {
-			for (unsigned int i = WaveFieldWriterExecutor::NUM_LOWVARIABLES; i < WaveFieldWriterExecutor::NUM_LOWVARIABLES+m_numIntegratedVars; i++) {
+			bool* outputMask = seissol::SeisSol::main.postProcessor().getIntegrationMask();
+			unsigned int offset = 0;
+			if (m_pstrain) {
+				offset = WaveFieldWriterExecutor::NUM_LOWVARIABLES;
+			}
+			unsigned int nextId = offset;
+			for (unsigned int i = offset; i < WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES+offset; i++) {
+				if (!outputMask[i-offset])
+					continue;
+
 				double* managedBuffer = async::Module<WaveFieldWriterExecutor,
-				WaveFieldInitParam, WaveFieldParam>::managedBuffer<double*>(m_variableBufferIds[1]+i);
+				WaveFieldInitParam, WaveFieldParam>::managedBuffer<double*>(m_variableBufferIds[1]+nextId);
 
 #ifdef _OPENMP
 		#pragma omp parallel for schedule(static)
 #endif // _OPENMP
 		for (unsigned int j = 0; j < m_numLowCells; j++)
 			managedBuffer[j] = m_integrals[m_map[j]
-					* 9 + i-WaveFieldWriterExecutor::NUM_LOWVARIABLES];
+					* 9 + nextId-offset];
 
-		sendBuffer(m_variableBufferIds[1]+i, m_numLowCells*sizeof(double));
+		sendBuffer(m_variableBufferIds[1]+nextId, m_numLowCells*sizeof(double));
+		nextId++;
 			}
 		}
 
