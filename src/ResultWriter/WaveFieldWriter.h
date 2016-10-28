@@ -85,7 +85,7 @@ class WaveFieldWriter : private async::Module<WaveFieldWriterExecutor, WaveField
 	unsigned int m_numVariables;
 
 	/** Number of integrated variables */
-	unsigned int m_numIntegratedVariables
+	unsigned int m_numIntegratedVariables;
 
 	/** Flag indicated which variables should be written */
 	bool* m_outputFlags;

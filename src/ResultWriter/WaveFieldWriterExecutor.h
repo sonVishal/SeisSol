@@ -293,6 +293,7 @@ public:
 
 public:
 	static const unsigned int NUM_LOWVARIABLES = 7;
+	static const unsigned int NUM_INTEGRATED_VARIABLES = 9;
 };
 
 }
