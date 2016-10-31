@@ -274,7 +274,7 @@ public:
 			nextId = 0;
 			for (unsigned int i = 0; i < NUM_TOTALLOWVARS; i++) {
 				if (m_lowOutputFlags[i]) {
-					m_lowWaveFieldWriter->writeData(i,
+					m_lowWaveFieldWriter->writeData(nextId,
 						static_cast<const double*>(info.buffer(m_variableBufferIds[1]+nextId)));
 
 					nextId++;
