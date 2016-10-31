@@ -271,11 +271,13 @@ public:
 		// Low order output
 		if (m_lowWaveFieldWriter) {
 			m_lowWaveFieldWriter->addTimeStep(param.time);
-
+			nextId = 0;
 			for (unsigned int i = 0; i < NUM_TOTALLOWVARS; i++) {
 				if (m_lowOutputFlags[i]) {
 					m_lowWaveFieldWriter->writeData(i,
-						static_cast<const double*>(info.buffer(m_variableBufferIds[1]+i)));
+						static_cast<const double*>(info.buffer(m_variableBufferIds[1]+nextId)));
+
+					nextId++;
 				}
 			}
 
