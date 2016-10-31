@@ -3234,9 +3234,9 @@ ALLOCATE( SpacePositionx(nDirac), &
       ! Setting default values
       IntegrationMask(:) = 0
       !
-#if defined(GENERATEDKERNELS) && defined(INTEGRATE_VARIABLES)
+! #if defined(GENERATEDKERNELS) && defined(INTEGRATE_VARIABLES)
       READ(IO%UNIT%FileIn, nml = Postprocessing)
-#endif
+! #endif
       ALLOCATE(IO%IntegrationMask(9),STAT=allocstat )                        !
       IF (allocStat .NE. 0) THEN                                             !
         logError(*) 'could not allocate IO%IntegrationMask in readpar!'      !
