@@ -242,6 +242,8 @@ public:
 			nextId++;
 		}
 
+		logInfo(rank) << "Writing High output at time" << utils::nospace <<  time << ". Done.";
+
 		if (m_pstrain) {
 			for (unsigned int i = 0; i < WaveFieldWriterExecutor::NUM_LOWVARIABLES; i++) {
 				double* managedBuffer = async::Module<WaveFieldWriterExecutor,
@@ -257,6 +259,8 @@ public:
 				sendBuffer(m_variableBufferIds[1]+i, m_numLowCells*sizeof(double));
 			}
 		}
+
+		logInfo(rank) << "Writing pstrain at time" << utils::nospace <<  time << ". Done.";
 
 		if (m_integrals) {
 			unsigned int offset = 0;
