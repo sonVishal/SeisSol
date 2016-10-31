@@ -7,17 +7,17 @@
  * @section LICENSE
  * Copyright (c) 2016, SeisSol Group
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the copyright holder nor the names of its
  *    contributors may be used to endorse or promote products derived from this
  *    software without specific prior written permission.
@@ -67,9 +67,9 @@ namespace seissol {
 template<typename T>
 struct seissol::initializers::Variable {
   unsigned index;
+  unsigned count;
   LayerMask mask;
-  
-  Variable() : index(std::numeric_limits<unsigned>::max()) {}
+  Variable() : index(std::numeric_limits<unsigned>::max()), count(1) {}
 };
 
 struct seissol::initializers::Bucket {
@@ -96,7 +96,7 @@ private:
 public:
   Layer() : m_numberOfCells(0), m_vars(NULL), m_buckets(NULL), m_bucketSizes(NULL) {}
   ~Layer() { delete[] m_vars; delete[] m_buckets; delete[] m_bucketSizes; }
-  
+
   template<typename T>
   T* var(Variable<T> const& handle) {
     assert(handle.index != std::numeric_limits<unsigned>::max());
@@ -109,7 +109,7 @@ public:
     assert(m_buckets != NULL && m_buckets[handle.index] != NULL);
     return m_buckets[handle.index];
   }
-  
+
   /// i-th bit of layerMask shall be set if data is masked on the i-th layer
   inline bool isMasked(LayerMask layerMask) const {
     return (LayerMask(m_layerType) & layerMask).any();
@@ -118,21 +118,21 @@ public:
   inline void setLayerType(enum LayerType layerType) {
     m_layerType = layerType;
   }
-  
+
   inline enum LayerType getLayerType() const {
     return m_layerType;
   }
-  
+
   inline unsigned getNumberOfCells() const {
     return m_numberOfCells;
   }
-  
+
   inline void setNumberOfCells(unsigned numberOfCells) {
     m_numberOfCells = numberOfCells;
   }
-  
+
   inline void allocatePointerArrays(unsigned numVars, unsigned numBuckets) {
-    assert(m_vars == NULL && m_buckets == NULL && m_bucketSizes == NULL);    
+    assert(m_vars == NULL && m_buckets == NULL && m_bucketSizes == NULL);
     m_vars = new void*[numVars];
     std::fill(m_vars, m_vars + numVars, static_cast<void*>(NULL));
     m_buckets = new void*[numBuckets];
@@ -140,12 +140,12 @@ public:
     m_bucketSizes = new size_t[numBuckets];
     std::fill(m_bucketSizes, m_bucketSizes + numBuckets, 0);
   }
-  
+
   inline void setBucketSize(Bucket const& handle, size_t size) {
     assert(m_bucketSizes != NULL);
     m_bucketSizes[handle.index] = size;
   }
-  
+
   void addVariableSizes(std::vector<MemoryInfo> const& vars, std::vector<size_t>& bytes) {
     for (unsigned var = 0; var < vars.size(); ++var) {
       if (!isMasked(vars[var].mask)) {
@@ -153,7 +153,7 @@ public:
       }
     }
   }
-  
+
   void addBucketSizes(std::vector<size_t>& bytes) {
     for (unsigned bucket = 0; bucket < bytes.size(); ++bucket) {
       bytes[bucket] += m_bucketSizes[bucket];
@@ -175,7 +175,7 @@ public:
       m_buckets[bucket] = static_cast<char*>(memory[bucket]) + offsets[bucket];
     }
   }
-  
+
   void touchVariables(std::vector<MemoryInfo> const& vars) {
     for (unsigned var = 0; var < vars.size(); ++var) {
       if (!isMasked(vars[var].mask)) {

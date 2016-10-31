@@ -66,6 +66,7 @@ enum BufferTags {
 	VARIABLE0,
 	LOWCELLS,
 	LOWVERTICES,
+	LOW_OUTPUT_FLAGS,
 	LOWVARIABLE0,
 	BUFFERTAG_MAX = LOWVARIABLE0
 };
@@ -99,6 +100,9 @@ private:
 
 	/** Flag indicated which variables should be written */
 	const bool* m_outputFlags;
+
+	/** Flags indicating which low order variables should be written */
+	const bool* m_lowOutputFlags;
 
 #ifdef USE_MPI
 	/** The MPI communicator for the XDMF writer */
@@ -186,29 +190,34 @@ public:
 		// Low order I/O
 		//
 		if (param.bufferIds[LOWCELLS] >= 0) {
-			// Pstrain enabled
+			m_lowOutputFlags = static_cast<const bool*>(info.buffer(param.bufferIds[LOW_OUTPUT_FLAGS]));
 
-			// TODO: Need a way to distinguish between pstrain and integrals
-			// TODO: We also need the flags for the integrated variables
-			// TODO: Based on this we need to assign the lowVariables
 			// Variables
-			std::vector<const char*> lowVariables(NUM_LOWVARIABLES+9);
-			lowVariables[0]  = "ep_xx";
-			lowVariables[1]  = "ep_yy";
-			lowVariables[2]  = "ep_zz";
-			lowVariables[3]  = "ep_xy";
-			lowVariables[4]  = "ep_yz";
-			lowVariables[5]  = "ep_xz";
-			lowVariables[6]  = "eta";
-			lowVariables[7]  = "int_xx";
-			lowVariables[8]  = "int_yy";
-			lowVariables[9]  = "int_zz";
-			lowVariables[10] = "int_xy";
-			lowVariables[11] = "int_yz";
-			lowVariables[12] = "int_xz";
-			lowVariables[13] = "int_u";
-			lowVariables[14] = "int_v";
-			lowVariables[15] = "int_w";
+			std::vector<const char*> lowVariables;
+			const char* lowVarNames[NUM_TOTALLOWVARS] = {
+				"ep_xx",
+				"ep_yy",
+				"ep_zz",
+				"ep_xy",
+				"ep_yz",
+				"ep_xz",
+				"eta",
+				"int_xx",
+				"int_yy",
+				"int_zz",
+				"int_xy",
+				"int_yz",
+				"int_xz",
+				"displacement_x",
+				"displacement_y",
+				"displacement_z"
+			};
+
+			for (size_t i = 0; i < NUM_TOTALLOWVARS; i++) {
+				if (m_lowOutputFlags[i]) {
+					lowVariables.push_back(lowVarNames[i]);
+				}
+			}
 
 			m_lowWaveFieldWriter = new xdmfwriter::XdmfWriter<xdmfwriter::TETRAHEDRON>(
 				rank, (std::string(outputPrefix)+"-low").c_str(), lowVariables, param.timestep);
@@ -259,14 +268,15 @@ public:
 
 		m_waveFieldWriter->flush();
 
-		// TODO: The low output needs a flag for the integrated variables
 		// Low order output
 		if (m_lowWaveFieldWriter) {
 			m_lowWaveFieldWriter->addTimeStep(param.time);
 
-			for (unsigned int i = 0; i < NUM_LOWVARIABLES+9; i++) {
-				m_lowWaveFieldWriter->writeData(i,
-					static_cast<const double*>(info.buffer(m_variableBufferIds[1]+i)));
+			for (unsigned int i = 0; i < NUM_TOTALLOWVARS; i++) {
+				if (m_lowOutputFlags[i]) {
+					m_lowWaveFieldWriter->writeData(i,
+						static_cast<const double*>(info.buffer(m_variableBufferIds[1]+i)));
+				}
 			}
 
 			m_lowWaveFieldWriter->flush();
@@ -294,6 +304,7 @@ public:
 public:
 	static const unsigned int NUM_LOWVARIABLES = 7;
 	static const unsigned int NUM_INTEGRATED_VARIABLES = 9;
+	static const unsigned int NUM_TOTALLOWVARS = 16;
 };
 
 }

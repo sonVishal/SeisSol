@@ -90,8 +90,8 @@ class WaveFieldWriter : private async::Module<WaveFieldWriterExecutor, WaveField
 	/** Flag indicated which variables should be written */
 	bool* m_outputFlags;
 
-	/** Flag indicated which integrated variables should be written */
-	bool* m_integratedFlags;
+	/** Flag indicated which low variables should be written */
+	bool* m_lowOutputFlags;
 
 	/** Refined number of cells */
 	unsigned int m_numCells;
@@ -274,7 +274,7 @@ public:
 #endif // _OPENMP
 				for (unsigned int j = 0; j < m_numLowCells; j++)
 					managedBuffer[j] = m_integrals[m_map[j]
-							* 9 + nextId-offset];
+							* m_numIntegratedVariables + nextId-offset];
 
 				sendBuffer(m_variableBufferIds[1]+nextId, m_numLowCells*sizeof(double));
 				nextId++;
@@ -310,6 +310,8 @@ public:
 		m_variableSubsampler = 0L;
 		delete [] m_outputFlags;
 		m_outputFlags = 0L;
+		delete [] m_lowOutputFlags;
+		m_lowOutputFlags = 0L;
 		if (m_extractRegion) {
 			delete [] m_map;
 			m_map = 0L;

@@ -531,7 +531,7 @@ void seissol::Interoperability::initializeIO(
 			  seissol::SeisSol::main.meshReader(),
 			  reinterpret_cast<const double*>(m_ltsTree->var(m_lts->dofs)),
 			  reinterpret_cast<const double*>(m_ltsTree->var(m_lts->pstrain)),
-        reinterpret_cast<const double*>(m_ltsTree->var(m_lts->integrals)),
+              seissol::SeisSol::main.postProcessor().getIntegrals(m_ltsTree),
 			  m_ltsLut.getMeshToLtsLut(m_lts->dofs.mask)[0],
 			  refinement, waveFieldTimeStep, outputMask, outputRegionBounds,
 			  seissol::SeisSol::main.timeManager().getTimeTolerance());

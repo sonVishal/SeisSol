@@ -104,19 +104,7 @@ public:
     handle.index = varInfo.size();
     handle.mask = mask;
     MemoryInfo m;
-    m.bytes = sizeof(T);
-    m.alignment = alignment;
-    m.mask = mask;
-    m.memkind = memkind;
-    varInfo.push_back(m);
-  }
-
-  template<typename T>
-  void addVar(Variable<T>& handle, LayerMask mask, size_t alignment, seissol::memory::Memkind memkind, const size_t varSize) {
-    handle.index = varInfo.size();
-    handle.mask = mask;
-    MemoryInfo m;
-    m.bytes = sizeof(T)*varSize;
+    m.bytes = sizeof(T)*handle.count;
     m.alignment = alignment;
     m.mask = mask;
     m.memkind = memkind;
