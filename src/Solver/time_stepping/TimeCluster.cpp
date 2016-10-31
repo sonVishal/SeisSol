@@ -589,11 +589,12 @@ void seissol::time_stepping::TimeCluster::computeNeighboringIntegration( seissol
                                          energy[l_cell],
                                          pstrain[l_cell] );
 #endif
-// TODO: Change this accordingly
+#ifdef INTEGRATE_VARIABLES
   seissol::SeisSol::main.postProcessor().integrateQuantities( m_timeStepWidth,
                                                               i_layerData,
                                                               l_cell,
                                       			              dofs[l_cell] );
+#endif                                                             
   }
 }
 
