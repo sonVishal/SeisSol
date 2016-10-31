@@ -2,7 +2,8 @@
 #define POST_PROCESSOR_H
 
 #include <vector>
-#include "Initializer/tree/Layer.hpp"
+#include <Initializer/tree/Layer.hpp>
+#include <Initializer/tree/LTSTree.hpp>
 
 namespace seissol
 {
