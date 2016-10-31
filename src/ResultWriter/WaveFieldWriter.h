@@ -139,6 +139,7 @@ public:
 		  m_variableSubsampler(0L),
 		  m_numVariables(0),
 		  m_outputFlags(0L),
+		  m_lowOutputFlags(0L),
 		  m_numCells(0), m_numLowCells(0),
 		  m_dofs(0L), m_pstrain(0L), m_integrals(0L),
 		  m_map(0L),
@@ -259,12 +260,15 @@ public:
 
 		if (m_integrals) {
 			unsigned int offset = 0;
-			if (m_pstrain)
+			unsigned int flagOffset = WaveFieldWriterExecutor::NUM_LOWVARIABLES;
+			if (m_pstrain) {
 				offset = WaveFieldWriterExecutor::NUM_LOWVARIABLES;
+				flagOffset = 0;
+			}
 
 			nextId = offset;
 			for (unsigned int i = offset; i < offset+WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES; i++) {
-				if (!m_integratedFlags[i-offset])
+				if (!m_lowOutputFlags[i+flagOffset])
 					continue;
 				double* managedBuffer = async::Module<WaveFieldWriterExecutor,
 				WaveFieldInitParam, WaveFieldParam>::managedBuffer<double*>(m_variableBufferIds[1]+nextId);
