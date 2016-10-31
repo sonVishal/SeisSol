@@ -22,6 +22,7 @@ void seissol::writer::PostProcessor::setIntegrationMask(const int * const i_inte
 		}
 	}
 	m_integrals.count = m_numberOfVariables;
+	std::cout << "Number of integrated vars " << m_numberOfVariables << std::endl;
 }
 
 int seissol::writer::PostProcessor::getNumberOfVariables() {
