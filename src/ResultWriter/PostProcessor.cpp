@@ -32,11 +32,11 @@ bool* seissol::writer::PostProcessor::getIntegrationMask() {
 	return m_integrationMask;
 }
 
-void seissol::writer::PostProcessor::allocateMemory(LTSTree* ltsTree) {
+void seissol::writer::PostProcessor::allocateMemory(seissol::initializers::LTSTree* ltsTree) {
 	ltsTree->addVar( m_integrals, LayerMask(Ghost), PAGESIZE_HEAP,
       seissol::memory::Standard );
 }
 
-const double* seissol::writer::PostProcessor::getIntegrals(LTSTree* ltsTree) {
+const double* seissol::writer::PostProcessor::getIntegrals(seissol::initializers::LTSTree* ltsTree) {
 	return reinterpret_cast<const double*>(ltsTree->var(m_integrals));
 }

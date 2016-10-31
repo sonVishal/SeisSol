@@ -32,8 +32,8 @@ public:
     void setIntegrationMask(const int * const i_integrationMask);
     int getNumberOfVariables();
     bool* getIntegrationMask();
-    void allocateMemory(LTSTree* ltsTree);
-    const double* getIntegrals(LTSTree* ltsTree);
+    void allocateMemory(seissol::initializers::LTSTree* ltsTree);
+    const double* getIntegrals(seissol::initializers::LTSTree* ltsTree);
 };
 
 }
