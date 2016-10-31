@@ -289,9 +289,13 @@ public:
 			}
 		}
 
+		logInfo(rank) << "Writing integrals at time" << utils::nospace <<  time << ". Done.";
+
 		WaveFieldParam param;
 		param.time = time;
 		call(param);
+
+		logInfo(rank) << "Calling exec() at time" << utils::nospace <<  time << ". Done.";
 
 		// Update last time step
 		m_lastTimeStep = time;
