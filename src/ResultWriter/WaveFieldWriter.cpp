@@ -331,6 +331,7 @@ void seissol::writer::WaveFieldWriter::init(unsigned int numVars,
 	if (pstrain || integrals) {
 		sendBuffer(param.bufferIds[LOWCELLS], pLowMeshRefiner->getNumCells() * 4 * sizeof(unsigned int));
 		sendBuffer(param.bufferIds[LOWVERTICES], pLowMeshRefiner->getNumVertices() * 3 * sizeof(double));
+		sendBuffer(param.bufferIds[LOW_OUTPUT_FLAGS], WaveFieldWriterExecutor::NUM_TOTALLOWVARS*sizeof(bool));
 	}
 
 	// Initialize the executor
