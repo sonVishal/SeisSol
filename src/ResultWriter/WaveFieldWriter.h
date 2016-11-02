@@ -244,10 +244,6 @@ public:
 
 		// nextId is required in a manner similar to above for writing integrated variables
 		nextId = 0;
-		// In case pstrain is disabled and integration is enabled we need the offset
-		// to skip the output flags pertaining to pstrain since the output flags
-		// are stored irrespective of pstrain or not.
-		unsigned int offset = 0;
 		if (m_pstrain) {
 			for (unsigned int i = 0; i < WaveFieldWriterExecutor::NUM_PLASTICITY_VARIABLES; i++) {
 				double* managedBuffer = async::Module<WaveFieldWriterExecutor,
@@ -263,12 +259,11 @@ public:
 				sendBuffer(m_variableBufferIds[1]+i, m_numLowCells*sizeof(double));
 			}
 			nextId = WaveFieldWriterExecutor::NUM_PLASTICITY_VARIABLES;
-			offset = nextId;
 		}
 
 		if (m_integrals) {
 			for (unsigned int i = 0; i < WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES; i++) {
-				if (!m_lowOutputFlags[i+offset])
+				if (!m_lowOutputFlags[i+WaveFieldWriterExecutor::NUM_PLASTICITY_VARIABLES])
 					continue;
 				double* managedBuffer = async::Module<WaveFieldWriterExecutor,
 				WaveFieldInitParam, WaveFieldParam>::managedBuffer<double*>(m_variableBufferIds[1]+nextId);
