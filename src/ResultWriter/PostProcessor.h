@@ -43,7 +43,6 @@
 #include <vector>
 #include <Initializer/tree/Layer.hpp>
 #include <Initializer/tree/LTSTree.hpp>
-#include <Initializer/typedefs.hpp>
 #include "Initializer/preProcessorMacros.fpp"
 
 namespace seissol
