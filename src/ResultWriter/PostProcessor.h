@@ -41,9 +41,10 @@
 #define POST_PROCESSOR_H
 
 #include <vector>
+#include <Initializer/typedefs.hpp>
 #include <Initializer/tree/Layer.hpp>
 #include <Initializer/tree/LTSTree.hpp>
-#include "Initializer/preProcessorMacros.fpp"
+#include <Initializer/preProcessorMacros.fpp>
 
 namespace seissol
 {
