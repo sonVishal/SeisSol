@@ -482,9 +482,11 @@ void seissol::Interoperability::enableWaveFieldOutput( double i_waveFieldInterva
   seissol::SeisSol::main.waveFieldWriter().setFilename( i_waveFieldFilename );
 }
 
+#ifdef GENERATEDKERNELS
 void seissol::Interoperability::getIntegrationMask( int* i_integrationMask ) {
   seissol::SeisSol::main.postProcessor().setIntegrationMask(i_integrationMask);
 }
+#endif
 
 void seissol::Interoperability::enableCheckPointing( double i_checkPointInterval,
 		const char *i_checkPointFilename, const char *i_checkPointBackend ) {
@@ -531,7 +533,9 @@ void seissol::Interoperability::initializeIO(
 			  seissol::SeisSol::main.meshReader(),
 			  reinterpret_cast<const double*>(m_ltsTree->var(m_lts->dofs)),
 			  reinterpret_cast<const double*>(m_ltsTree->var(m_lts->pstrain)),
+#ifdef GENERATEDKERNELS
               seissol::SeisSol::main.postProcessor().getIntegrals(m_ltsTree),
+#endif
 			  m_ltsLut.getMeshToLtsLut(m_lts->dofs.mask)[0],
 			  refinement, waveFieldTimeStep, outputMask, outputRegionBounds,
 			  seissol::SeisSol::main.timeManager().getTimeTolerance());

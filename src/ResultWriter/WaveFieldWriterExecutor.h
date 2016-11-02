@@ -66,7 +66,9 @@ enum BufferTags {
 	VARIABLE0,
 	LOWCELLS,
 	LOWVERTICES,
+#ifdef GENERATEDKERNELS
 	LOW_OUTPUT_FLAGS,
+#endif
 	LOWVARIABLE0,
 	BUFFERTAG_MAX = LOWVARIABLE0
 };
@@ -101,8 +103,10 @@ private:
 	/** Flag indicated which variables should be written */
 	const bool* m_outputFlags;
 
+#ifdef GENERATEDKERNELS
 	/** Flags indicating which low order variables should be written */
 	const bool* m_lowOutputFlags;
+#endif
 
 #ifdef USE_MPI
 	/** The MPI communicator for the XDMF writer */
@@ -112,7 +116,9 @@ private:
 public:
 	WaveFieldWriterExecutor()
 		: m_waveFieldWriter(0L),
+#ifdef GENERATEDKERNELS
 		  m_lowWaveFieldWriter(0L),
+#endif
 		  m_numVariables(0),
 		  m_outputFlags(0L),
 		  m_lowOutputFlags(0L)
@@ -192,6 +198,7 @@ public:
 		//
 		if (param.bufferIds[LOWCELLS] >= 0) {
 			// Pstrain or Integrated quantities enabled
+#ifdef GENERATEDKERNELS
 			m_lowOutputFlags = static_cast<const bool*>(info.buffer(param.bufferIds[LOW_OUTPUT_FLAGS]));
 			// Variables
 			std::vector<const char*> lowVariables;
@@ -213,12 +220,21 @@ public:
 				"displacement_y",
 				"displacement_z"
 			};
-
 			for (size_t i = 0; i < NUM_LOWVARIABLES; i++) {
 				if (m_lowOutputFlags[i]) {
 					lowVariables.push_back(lowVarNames[i]);
 				}
 			}
+#else
+			std::vector<const char*> lowVariables(NUM_PLASTICITY_VARIABLES);
+			lowVariables[0] = "ep_xx";
+			lowVariables[1] = "ep_yy";
+			lowVariables[2] = "ep_zz";
+			lowVariables[3] = "ep_xy";
+			lowVariables[4] = "ep_yz";
+			lowVariables[5] = "ep_xz";
+			lowVariables[6] = "eta";
+#endif
 
 			m_lowWaveFieldWriter = new xdmfwriter::XdmfWriter<xdmfwriter::TETRAHEDRON>(
 				rank, (std::string(outputPrefix)+"-low").c_str(), lowVariables, param.timestep);
@@ -273,6 +289,7 @@ public:
 		if (m_lowWaveFieldWriter) {
 			m_lowWaveFieldWriter->addTimeStep(param.time);
 
+#ifdef GENERATEDKERNELS
 		nextId = 0;
 		for (unsigned int i = 0; i < NUM_LOWVARIABLES; i++) {
 			if (m_lowOutputFlags[i]) {
@@ -281,6 +298,13 @@ public:
 
 			nextId++;
 			}
+		}
+#else
+		for (unsigned int i = 0; i < NUM_PLASTICITY_VARIABLES; i++) {
+				m_lowWaveFieldWriter->writeData(i,
+					static_cast<const double*>(info.buffer(m_variableBufferIds[1]+i)));
+			}
+#endif
 		}
 
 			m_lowWaveFieldWriter->flush();

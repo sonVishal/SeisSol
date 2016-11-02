@@ -84,14 +84,19 @@ class WaveFieldWriter : private async::Module<WaveFieldWriterExecutor, WaveField
 	/** Number of variables */
 	unsigned int m_numVariables;
 
+#ifdef GENERATEDKERNELS
 	/** Number of integrated variables */
 	unsigned int m_numIntegratedVariables;
 
-	/** Flag indicated which variables should be written */
-	bool* m_outputFlags;
-
 	/** Flag indicated which low variables should be written */
 	bool* m_lowOutputFlags;
+
+	/** Pointer to the integrals */
+	const double* grals;
+#endif
+
+	/** Flag indicated which variables should be written */
+	bool* m_outputFlags;
 
 	/** Refined number of cells */
 	unsigned int m_numCells;
@@ -105,8 +110,6 @@ class WaveFieldWriter : private async::Module<WaveFieldWriterExecutor, WaveField
 	/** Pointer to the plastic strain */
 	const double* m_pstrain;
 
-	/** Pointer to the integrals */
-	const double* m_integrals;
 
 	/** Mapping from the cell order to dofs order */
 	unsigned int* m_map;
@@ -139,9 +142,13 @@ public:
 		  m_variableSubsampler(0L),
 		  m_numVariables(0),
 		  m_outputFlags(0L),
+#ifdef GENERATEDKERNELS
 		  m_lowOutputFlags(0L),
+		  m_integrals(0L),
+		  m_numIntegratedVariables(0),
+#endif
 		  m_numCells(0), m_numLowCells(0),
-		  m_dofs(0L), m_pstrain(0L), m_integrals(0L),
+		  m_dofs(0L), m_pstrain(0L),
 		  m_map(0L),
 		  m_lastTimeStep(-1),
 		  m_timeTolerance(0),
@@ -261,6 +268,7 @@ public:
 			nextId = WaveFieldWriterExecutor::NUM_PLASTICITY_VARIABLES;
 		}
 
+#ifdef GENERATEDKERNELS
 		if (m_integrals) {
 			for (unsigned int i = 0; i < WaveFieldWriterExecutor::NUM_INTEGRATED_VARIABLES; i++) {
 				if (!m_lowOutputFlags[i+WaveFieldWriterExecutor::NUM_PLASTICITY_VARIABLES])
@@ -279,7 +287,7 @@ public:
 				nextId++;
 			}
 		}
-
+#endif
 		WaveFieldParam param;
 		param.time = time;
 		call(param);
@@ -309,8 +317,10 @@ public:
 		m_variableSubsampler = 0L;
 		delete [] m_outputFlags;
 		m_outputFlags = 0L;
+#ifdef GENERATEDKERNELS
 		delete [] m_lowOutputFlags;
 		m_lowOutputFlags = 0L;
+#endif
 		if (m_extractRegion) {
 			delete [] m_map;
 			m_map = 0L;
