@@ -257,7 +257,7 @@ public:
 
 				sendBuffer(m_variableBufferIds[1]+i, m_numLowCells*sizeof(double));
 			}
-			nextId = flagOffset = WaveFieldWriterExecutor::NUM_PLASTICITY_VARIABLES;
+			nextId = WaveFieldWriterExecutor::NUM_PLASTICITY_VARIABLES;
 		}
 
 		if (m_integrals) {
